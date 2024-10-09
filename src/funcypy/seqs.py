@@ -42,3 +42,8 @@ def last(seq):
         val = i
     return val
 
+def concat(*seqs):
+    'concatenate sequences'
+    for seq in seqs:
+        for i in seq:
+            yield i
