@@ -25,3 +25,9 @@ def partial(func):
     def f(*args, **kwargs):
         return functools.partial(func, *args, **kwargs)
     return f
+
+def pipe(*args):
+    "run an input through a list of functions"
+    y = args[0]
+    funcs = args[1:]
+    return functools.reduce(lambda x, f: f(x), funcs, y)

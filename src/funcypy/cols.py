@@ -75,9 +75,8 @@ def field_filter(fields, obj=missing):
 
 
 def flatten(obj: dict, _name_space="", lazy=False):
-    """Takes a nested dict and flattens the values. The function returns an iterator
-    of the dict items. Such that:
-        dict(flatten({"some": {"nested": {"value1": 1, "value2": 2}, "other": 3}}))
+    """Takes a nested dict and flattens the values:
+        flatten({"some": {"nested": {"value1": 1, "value2": 2}, "other": 3}})
     returns:
         {"some.nested.value1": 1, "some.nested.value2": 2, "some.other": 3}
     """
