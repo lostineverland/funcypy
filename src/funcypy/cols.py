@@ -58,7 +58,7 @@ def flatten(obj: dict, _name_space=""):
     for key, val in obj.items():
         k = ".".join([_name_space, key])
         if isinstance(val, dict):
-            for kk, vv in flatten(val, k, lazy):
+            for kk, vv in flatten(val, k):
                 yield kk, vv
         else:
             yield k[1:], val
