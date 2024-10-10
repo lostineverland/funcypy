@@ -2,7 +2,7 @@
 
 import functools
 from typing import Callable, Union, Generator
-from funcy import complement
+from . funcy import complement
 missing = object()
 
 
