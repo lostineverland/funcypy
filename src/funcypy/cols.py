@@ -80,11 +80,13 @@ def flatten(obj: dict, _name_space="", lazy=False):
     returns:
         {"some.nested.value1": 1, "some.nested.value2": 2, "some.other": 3}
     """
-    if not lazy: return dict(flatten(obj, lazy=True))
-    for key, val in obj.items():
-        k = ".".join([_name_space, key])
-        if isinstance(val, dict):
-            for kk, vv in flatten(val, k, lazy):
-                yield kk, vv
-        else:
-            yield k[1:], val
+    if not lazy: yield dict(flatten(obj, lazy=True))
+    else:
+        for key, val in obj.items():
+            k = ".".join([_name_space, key])
+            if isinstance(val, dict):
+                for kk, vv in flatten(val, k, lazy):
+                    yield kk, vv
+            else:
+                yield k[1:], val
+
