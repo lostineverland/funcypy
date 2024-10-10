@@ -3,8 +3,8 @@
 import functools
 from typing import Callable, Generator
 from . funcy import complement
-missing = object()
 
+missing = object()
 
 def keymap(oper: Callable, obj: dict=missing) -> Generator:
     'Perform a map operation over the keys of a dict'
