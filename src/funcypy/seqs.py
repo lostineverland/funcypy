@@ -13,10 +13,9 @@ def take(n, seq=missing):
             return vals
     return vals
 
-def limit_seq(limit, seq=missing):
+def limit_seq(limit, seq):
     '''allows you to set a hard limit on a sequence
     '''
-    if seq is missing: return functools.partial(limit_seq, limit)
     for i, val in enumerate(seq):
         if i == limit: break
         yield val
@@ -40,6 +39,7 @@ def nth(n, seq=missing):
         return x
 
 def last(seq):
+    val = None
     for i in seq:
         val = i
     return val
