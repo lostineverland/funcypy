@@ -1,7 +1,7 @@
 'Operating on collections'
 
 import functools
-from typing import Callable, Generator
+from typing import Callable, Generator, Tuple
 from . funcy import complement
 
 missing = object()
@@ -44,7 +44,7 @@ def removeval(oper: Callable, obj: dict=missing) -> Generator:
     'Perform a remove operation over the vals of a dict'
     return valfilter(complement(oper), obj)
 
-def field_filter(fields: list, obj: dict=missing) -> dict:
+def field_filter(fields: Tuple, obj: dict=missing) -> dict:
     'apply a white list filter (fields) to the dict keys'
     if obj is missing: return functools.partial(field_filter, fields)
     return keyfilter(
