@@ -65,6 +65,14 @@ def flatten(obj: dict, _name_space=""):
         "some.nested.value1": 1, 
         "some.nested.value2": [{"more":{"nesting": 3}}, {"value4": 4}], 
         "some.other": 3}
+
+    but perhaps we want further depth?: (not implemented)
+        "some.nested.value2": [
+                                {"more.nesting": 3}, 
+                                {"value4": 4}], 
+    or:
+        "some.nested.value2".[0].more.nesting": 3}, 
+        "some.nested.value2".[1].value4": 4, 
     """
     for key, val in obj.items():
         k = ".".join([_name_space, key])
