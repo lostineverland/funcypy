@@ -44,7 +44,7 @@ def removeval(oper: Callable, obj: dict=missing) -> Generator:
     'Perform a remove operation over the vals of a dict'
     return valfilter(complement(oper), obj)
 
-def field_filter(fields: list, obj: dict=missing):
+def field_filter(fields: list, obj: dict=missing) -> dict:
     'apply a white list filter (fields) to the dict keys'
     if obj is missing: return functools.partial(field_filter, fields)
     return keyfilter(
@@ -52,7 +52,7 @@ def field_filter(fields: list, obj: dict=missing):
         obj
     )
 
-def flatten(obj: dict, _name_space=""):
+def flatten(obj: dict, _name_space="") -> dict:
     """Takes a nested dict and flattens the values such that:
     {
         "some": {
