@@ -55,3 +55,9 @@ def epoch_to_iso(epoch, utc=True):
 def iso_to_epoch(iso_dt):
     dt = dt_from_iso(iso_dt)
     return dt.timestamp()
+
+def to_zulu(iso_dt):
+    return epoch_to_iso(dt_from_iso(iso_dt).timestamp())
+
+def to_local(iso_dt):
+    return epoch_to_iso(dt_from_iso(iso_dt).timestamp(), utc=False)
