@@ -61,3 +61,6 @@ def to_zulu(iso_dt):
 
 def to_local(iso_dt):
     return epoch_to_iso(dt_from_iso(iso_dt).timestamp(), utc=False)
+
+def local_diff():
+    return (datetime.datetime.utcfromtimestamp(0) - datetime.datetime.fromtimestamp(0)).total_seconds()
