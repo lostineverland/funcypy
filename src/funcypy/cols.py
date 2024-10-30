@@ -52,7 +52,7 @@ def field_filter(fields: Tuple, obj: dict=missing) -> dict:
         obj
     )
 
-def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
+def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False, all_possible_keys=False) -> dict:
     """Takes a nested dict and flattens the values such that:
     {
         "some": {
@@ -66,25 +66,45 @@ def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=Fal
         "some.nested.value2": [{"more":{"nesting": 3}}, {"value4": 4}], 
         "some.other": 3}
 
-    but perhaps we want further depth?: (not implemented)
+    if follow_list:
         "some.nested.value2": [
                                 {"more.nesting": 3}, 
                                 {"value4": 4}], 
-    or:
-        "some.nested.value2".[0].more.nesting": 3}, 
-        "some.nested.value2".[1].value4": 4, 
+    becomes:
+        "some.nested.value2.0.more.nesting": 3, 
+        "some.nested.value2.1.value4": 4,
+
+    depth dictates how many dots are allowed:
+        depth=1
+            {"some.nested": {
+                "value1": 1, 
+                "value2": [{"more":{"nesting": 3}}, {"value4": 4}]}, 
+            "some.other": 3}
+        
+        depth=2
+            {"some.nested.value1": 1,
+            "some.nested.value2": [{"more":{"nesting": 3}}, {"value4": 4}],
+            "some.other": 3
+        }
+            # further depth here would also require `follow_list=True`
+
+    `all_possible_keys` contains duplicate data and should only be used to explore
+    the key space 
     """
     for key, val in obj.items():
         k = ".".join([_name_space, key])
         if isinstance(val, dict) and depth != 0:
-            for kk, vv in flatten(val, k, depth=depth - 1, follow_list=follow_list):
+            if all_possible_keys: yield k[1:], val
+            for kk, vv in flatten(val, k, depth=depth - 1, follow_list=follow_list, all_possible_keys=all_possible_keys):
                 yield kk, vv
         elif isinstance(val, list) and depth != 0 and follow_list:
+            if all_possible_keys: yield k[1:], val
             for kk, vv in flatten(
                     {str(i): j for i, j in enumerate(val)},
                     k,
                     depth=depth - 1,
-                    follow_list=follow_list):
+                    follow_list=follow_list,
+                    all_possible_keys=all_possible_keys):
                 yield kk, vv
         else:
             yield k[1:], val
