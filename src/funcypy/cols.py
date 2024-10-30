@@ -52,7 +52,7 @@ def field_filter(fields: Tuple, obj: dict=missing) -> dict:
         obj
     )
 
-def flatten(obj: dict, _name_space="") -> dict:
+def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
     """Takes a nested dict and flattens the values such that:
     {
         "some": {
@@ -76,8 +76,15 @@ def flatten(obj: dict, _name_space="") -> dict:
     """
     for key, val in obj.items():
         k = ".".join([_name_space, key])
-        if isinstance(val, dict):
-            for kk, vv in flatten(val, k):
+        if isinstance(val, dict) and depth != 0:
+            for kk, vv in flatten(val, k, depth=depth - 1, follow_list=follow_list):
+                yield kk, vv
+        elif isinstance(val, list) and depth != 0 and follow_list:
+            for kk, vv in flatten(
+                    {str(i): j for i, j in enumerate(val)},
+                    k,
+                    depth=depth - 1,
+                    follow_list=follow_list):
                 yield kk, vv
         else:
             yield k[1:], val

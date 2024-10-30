@@ -38,5 +38,5 @@ def field_filter(fields, obj=missing):
     if obj is missing: return functools.partial(field_filter, fields)
     return dict(cols.field_filter(fields, obj))
 
-def flatten(obj: dict, _name_space: str="") -> dict:
-    return dict(cols.flatten(obj))
+def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
+    return dict(cols.flatten(obj, _name_space=_name_space, depth=depth, follow_list=follow_list))

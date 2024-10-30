@@ -46,6 +46,7 @@ def test_field_filter(data):
     assert list(map(cols.field_filter(['some', 'me', 'for']), 3 * [sample])) == 3 * [data]
 
 def test_flatten():
-    data = cols.flatten({"some": {"nested": {"value1": 1, "value2": [{"more":{"nesting": 3}}, {"value4": 4}]}, "other": 3}})
-    assert data == {"some.nested.value1": 1, "some.nested.value2": [{"more":{"nesting": 3}}, {"value4": 4}], "some.other": 3}
-
+    data = {"some": {"nested": {"value1": 1, "value2": [{"more":{"nesting": 3}}, {"value4": 4}]}, "other": 3}}
+    assert cols.flatten(data) == {"some.nested.value1": 1, "some.nested.value2": [{"more":{"nesting": 3}}, {"value4": 4}], "some.other": 3}
+    assert cols.flatten(data, depth=1) == {"some.nested": {"value1": 1, "value2": [{"more":{"nesting": 3}}, {"value4": 4}]}, "some.other": 3}
+    assert cols.flatten(data, follow_list=True) == {"some.nested.value1": 1, "some.nested.value2.0.more.nesting": 3, "some.nested.value2.1.value4": 4, "some.other": 3}
