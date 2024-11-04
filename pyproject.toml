@@ -5,6 +5,10 @@ description = "Minimalist functional leaning library"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = []
+authors = [
+  { name="Carlos Bonilla", email="lostineverland@gmail.com" }
+]
+license = { text="GPL-3.0" }
 
 [build-system]
 requires = ["hatchling"]
