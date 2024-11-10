@@ -1,4 +1,5 @@
 import datetime
+from functools import partial
 
 ISO_8601_YEARS = '%Y'
 ISO_8601_MONTHS = '%Y-%m'
@@ -28,12 +29,30 @@ def format_granularity(iso_dt: str) -> str:
     }
     return len_to_format.get(len(iso_dt), 'unknown_iso_dt')
 
-now = lambda: datetime.datetime.now().strftime(ISO_8601_MICROSECONDS)
-utc_now = lambda: datetime.datetime.utcnow().strftime(ISO_8601_MICROSECONDS) + 'Z'
-today = lambda: datetime.datetime.now().strftime(ISO_8601_DAYS)
-utc_today = lambda: datetime.datetime.utcnow().strftime(ISO_8601_DAYS) + 'Z'
-week = lambda: datetime.datetime.now().strftime(ISO_8601_WEEKS)
-utc_week = lambda: datetime.datetime.utcnow().strftime(ISO_8601_WEEKS) + 'Z'
+def iso_ts(format, local=False):
+    '''Where format is one of:
+        years
+        months
+        weeks
+        days
+        hours
+        minutes
+        seconds
+        microseconds
+    '''
+    if local:
+        return datetime.datetime.now().strftime(iso_formats[format])
+    else:
+        return datetime.datetime.utcnow().strftime(iso_formats[format]) + 'Z'
+
+now = partial(iso_ts, 'microseconds', local=True)
+utc_now = partial(iso_ts, 'microseconds')
+today = partial(iso_ts, 'days', local=True)
+utc_today = partial(iso_ts, 'days')
+week = partial(iso_ts, 'weeks', local=True)
+utc_week = partial(iso_ts, 'weeks')
+year = partial(iso_ts, 'years', local=True)
+utc_year = partial(iso_ts, 'years')
 
 def dt_from_iso(iso_dt):
     'always return UTC datetime'
