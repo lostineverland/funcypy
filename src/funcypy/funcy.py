@@ -31,3 +31,20 @@ def pipe(*args: Tuple[Any, Callable]):
     y = args[0]
     funcs = args[1:]
     return functools.reduce(lambda x, f: f(x), funcs, y)
+
+def once(func):
+    '''A decorator which ensures that `func` is only run once.
+        It caches the results of the single execution and returns
+        them on any subsequent call regardless of changes to the
+        function arguments
+    '''
+    c = 0
+    res = []
+    @functools.wraps(func)
+    def f(*args, **kwargs):
+        nonlocal c
+        if c == 0:
+            c += 1
+            res.append(func(*args, **kwargs))
+        return res[0]
+    return f
