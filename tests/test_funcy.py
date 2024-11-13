@@ -19,3 +19,8 @@ def test_rcomp_complement():
 
 def test_pipe():
     assert pipe(2, add(3), pow(2)) == 25
+
+def test_contains():
+    assert contains('some', 1, 'me')('some')
+    assert has('some', 1, 'me')(1)
+    assert not contains('some', 1, 'me')('other')

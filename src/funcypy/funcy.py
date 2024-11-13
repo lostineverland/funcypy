@@ -32,7 +32,7 @@ def pipe(*args: Tuple[Any, Callable]):
     funcs = args[1:]
     return functools.reduce(lambda x, f: f(x), funcs, y)
 
-def once(func):
+def once(func: Callable) -> Callable:
     '''A decorator which ensures that `func` is only run once.
         It caches the results of the single execution and returns
         them on any subsequent call regardless of changes to the
@@ -48,3 +48,14 @@ def once(func):
             res.append(func(*args, **kwargs))
         return res[0]
     return f
+
+def contains(*items: Tuple) -> Callable:
+    """Given a collection it returns the `superset` function of a set
+        wrapped in a more useful form, such that:
+        contains('some', 1, 'me')('some') == True
+        contains('some', 1, 'me')(1) == True
+        contains('some', 1, 'me')('other') == False
+    """
+    return lambda item: set(items).issuperset([item])
+
+has = contains
