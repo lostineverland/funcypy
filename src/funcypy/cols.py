@@ -52,7 +52,7 @@ def field_filter(fields: Tuple, obj: dict=missing) -> dict:
         obj
     )
 
-def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False, all_possible_keys=False) -> dict:
+def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False, all_possible_keys=False) -> Generator:
     """Takes a nested dict and flattens the values such that:
     {
         "some": {
