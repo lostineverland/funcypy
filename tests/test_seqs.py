@@ -32,3 +32,11 @@ def test_concat(data):
     assert list(seqs.concat(iter(range(3)), iter(range(3)))) == 2 * list(range(3))
     assert list(seqs.concat([], iter(range(3)), [], [3], [])) == list(range(4))
 
+def test_iterator(data):
+    assert list(seqs.iterator(range(10))) == list(range(10))
+    ii = seqs.iterator(data)
+    assert next(ii) == 0
+    assert ii.send(-3) == None
+    assert next(ii) == -3
+    assert next(ii) == 1
+    assert list(ii) == list(range(2, 10))
