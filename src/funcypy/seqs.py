@@ -1,7 +1,7 @@
 'tools to handle lazy objects (sequences)'
 
 import functools
-from typing import Generator, Iterable, List, Tuple, Any, Union
+from typing import Generator, Iterable, Iterator, List, Tuple, Any, Union
 
 missing = object()
 
@@ -54,3 +54,15 @@ def concat(*seqs: Tuple[Iterable]) -> Iterable:
     for seq in seqs:
         for i in seq:
             yield i
+
+def iterator(key_val: Iterator) -> Generator:
+    'An iterator which allows a rewind'
+    k_v = next(key_val, None)
+    while k_v:
+        rewind = yield k_v
+        while rewind:              # the send() method actually triggers the yield,
+            yield                  # so this yield returns None to the send statement
+            rewind = yield rewind  # which triggered the rewind
+        else:
+            k_v = next(key_val, None)
+
