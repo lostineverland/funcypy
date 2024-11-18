@@ -55,14 +55,15 @@ def concat(*seqs: Tuple[Iterable]) -> Iterable:
         for i in seq:
             yield i
 
-def iterator(key_val: Iterator) -> Generator:
+def iterator(seq: Iterable) -> Generator:
     'An iterator which allows a rewind'
-    k_v = next(key_val, None)
-    while k_v:
-        rewind = yield k_v
+    if not isinstance(seq, Iterator): seq = iter(seq)
+    i = next(seq, missing)
+    while i is not missing:
+        rewind = yield i
         while rewind:              # the send() method actually triggers the yield,
             yield                  # so this yield returns None to the send statement
             rewind = yield rewind  # which triggered the rewind
         else:
-            k_v = next(key_val, None)
+            i = next(seq, missing)
 

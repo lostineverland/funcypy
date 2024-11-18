@@ -110,7 +110,7 @@ def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=Fal
         else:
             yield k[1:], val
 
-def nesten(key_val: Iterator, base: str='') -> Generator[Tuple[str, Any], Tuple[str, Any], None]:
+def nesten(key_val: Iterable, base: str='') -> Generator[Tuple[str, Any], Tuple[str, Any], None]:
     if not base: key_val = iterator(key_val)
     keys, val = next(key_val, (None, None))
     while keys:
