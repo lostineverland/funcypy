@@ -2,8 +2,8 @@
 
 import functools
 from typing import Callable, Generator, Tuple, Iterable, Iterator, Any, Union
-from . funcy import complement, log
-from . seqs import concat
+from . funcy import complement
+from . seqs import concat, iterator
 
 missing = object()
 
@@ -110,109 +110,26 @@ def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=Fal
         else:
             yield k[1:], val
 
-def expand_(key_val: Iterable[Tuple[str, Any]], mem=''):
-    col = []
-    for key, val in key_val:
-        if len(ks := key.split('.', 1)) > 1:
-            base, k = ks
-            if base == mem:
-                col += [(k, val)]
-            else:
-                yield mem, expand_(col, base)
-                col = [(k, val)]
-        else:
-            kk, vv = col[0]
-            if kk.isnumeric():
-                yield key, [vv for kk, vv in col] 
-            else:
-                yield key, {kk: vv for kk, vv in col}
-            col = [(k, val)]
-
-def expand(key_val: dict, base: str = ''):
-    return dict(collect(key_val))
-    # return nesten(key_val)
-
-def iterator(key_val):
-    if isinstance(key_val, dict):
-        key_val = key_val.items()
-    for k_v in key_val:
-        log(yields=k_v)
-        prev = yield k_v
-        if prev:
-    # this mechanism is not working
-    #  I should try to use a while loop with next
-    #  the problem is that rewinding takes an extra
-    #  step, which acts like it is skipping
-            log(yield_k_v=k_v)
-            yield k_v
-            log(yield_prev=prev)
-            yield prev
-            
-def collect(key_val: Union[Iterator, dict], base: str='', nesting: int=50) -> Generator[Tuple[str, Any], Tuple[str, Any], None]:
+def nesten(key_val: Iterator, base: str='') -> Generator[Tuple[str, Any], Tuple[str, Any], None]:
     if not base: key_val = iterator(key_val)
     keys, val = next(key_val, (None, None))
-    log(where='begin', received=[keys, val])
     while keys:
         k = keys
         if base:
             k = keys.replace(base + '.', '', 1)
             if base not in keys:
                 key_val.send([keys, val])
-                log('break', send=[keys, val])
                 break
         if len(b_k := k.split('.', 1)) > 1:
             key, rest_keys = b_k
-            log(nesting=nesting, base=base, keys=keys, b_k=k.split('.', 1), key=key, val=val, k=k, n_base='.'.join(filter(None, [base, key])))
-            key_val.send([keys, val])
-            log('new_func', send=[keys, val])
-            vals = dict(collect(
+            kk_vv = key_val.send([keys, val])
+            vals = dict(nesten(
                 key_val,
                 base='.'.join(filter(None, [base, key])),
-                nesting=nesting - 1,
                 ))
             if all(map(str.isnumeric, vals.keys())): vals = list(vals.values())
             yield key, vals
         else:
             key = b_k[0]
-            log(nesting=nesting, base=base, keys=keys, b_k=b_k[0], key=key, val=val, k=k)
             yield key, val
         keys, val = next(key_val, (None, None))
-        log(where='end', received=[keys, val])
-
-def nesten(key_val: Union[Iterator, dict]) -> dict:
-    if isinstance(key_val, dict): key_val = iter(key_val.items())
-    nested_dict = {}
-    for flat_key, value in key_val:
-        keys = flat_key.split(".")
-        current_level = nested_dict
-        
-        for i, key in enumerate(keys[:-1]):
-            # Check if the key is a digit indicating a list index
-            if key.isdigit():
-                key = int(key)
-                if not isinstance(current_level, list):
-                    # Initialize a list if it's not already a list
-                    current_level = []
-                while len(current_level) <= key:
-                    current_level.append({})
-                current_level = current_level[key]
-            else:
-                if key not in current_level:
-                    next_key = keys[i + 1]
-                    # Initialize a list if the next key is a digit
-                    current_level[key] = [] if next_key.isdigit() else {}
-                current_level = current_level[key]
-        
-        last_key = keys[-1]
-        if last_key.isdigit():
-            last_key = int(last_key)
-            if not isinstance(current_level, list):
-                current_level = []
-            while len(current_level) <= last_key:
-                current_level.append(None)
-            current_level[last_key] = value
-        else:
-            current_level[last_key] = value
-
-    return nested_dict
-

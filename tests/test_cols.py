@@ -51,9 +51,7 @@ def test_flatten():
     assert cols.flatten(data, depth=1) == {"some.nested": {"value1": 1, "value2": [{"more":{"nesting": 3}}, {"value4": 4}]}, "some.other": 3}
     assert cols.flatten(data, follow_list=True) == {"some.nested.value1": 1, "some.nested.value2.0.more.nesting": 3, "some.nested.value2.1.value4": 4, "some.other": 3}
 
-def test_expand():
-    from funcypy.cols import expand
+def test_nesten():
     data = {"some.nested.value1": 1, "some.nested.value2.0.more.nesting": 3, "some.nested.value2.1.value4": 4, "some.other": 3}
     resp = {"some": {"nested": {"value1": 1, "value2": [{"more":{"nesting": 3}}, {"value4": 4}]}, "other": 3}}
-    assert expand(data) == resp
-
+    assert cols.nesten(data) == resp
