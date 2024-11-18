@@ -3,7 +3,6 @@
 import pytest
 from funcypy.times import *
 
-# these are dependent on my timezone, make it more general
 def test_epoch_iso_dt():
     assert epoch_to_iso(0) == '1970-01-01T00:00:00Z'
     assert iso_to_epoch(epoch_to_iso(0)[:-1]) == local_diff()

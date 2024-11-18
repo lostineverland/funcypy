@@ -1,7 +1,7 @@
 'Operating on collections'
 
 import functools
-from typing import Callable, Generator, Tuple
+from typing import Callable, Generator, Tuple, Iterable, Iterator, Any, Union
 from . funcy import complement
 
 missing = object()
@@ -108,3 +108,44 @@ def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=Fal
                 yield kk, vv
         else:
             yield k[1:], val
+
+def expand_(key_val: Iterable[Tuple[str, Any]], mem=''):
+    col = []
+    for key, val in key_val:
+        if len(ks := key.split('.', 1)) > 1:
+            base, k = ks
+            if base == mem:
+                col += [(k, val)]
+            else:
+                yield mem, expand_(col, base)
+                col = [(k, val)]
+        else:
+            kk, vv = col[0]
+            if kk.isnumeric():
+                yield key, [vv for kk, vv in col] 
+            else:
+                yield key, {kk: vv for kk, vv in col}
+            col = [(k, val)]
+
+def expand(key_val: dict, base: str = ''):
+    return dict(collect(key_val))
+
+def collect(key_val: Union[Iterator, dict], base: str=''):
+    if isinstance(key_val, dict): key_val = iter(key_val.items())
+    keys, val = next(key_val, (None, None))
+    while keys:
+        if base:
+            keys = keys.replace(base + '.', '', 1)
+        print('long keys?', len(keys.split('.', 1)), keys.split('.', 1))
+        if len(b_k := keys.split('.', 1)) > 1:
+            key, rest_keys = b_k
+            vals = dict(collect(key_val, '.'.join(filter(None, [base, key]))))
+            if all(map(str.isnumeric, vals.keys())): vals = list(vals.values())
+            # print (key, vals)
+            yield key, vals
+        else:
+            key = b_k[0]
+            print (key, val)
+            yield key, val
+        keys, val = next(key_val, (None, None))
+
