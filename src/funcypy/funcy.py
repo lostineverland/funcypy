@@ -1,8 +1,18 @@
 'Operating on functions'
 
-import functools
+import functools, json
 from typing import Any, Callable, Tuple
 
+def log(x=None, name='value', **kwargs):
+    '''A logging function which returns the value (as opposed to print which returns `None`)
+        but will also print a JSON `{value: x}` of the given value. It also allows for
+        kwargs to be included in the JSON.
+    '''
+    if x:
+        print(json.dumps({name: x, **kwargs}))
+    else:
+        print(json.dumps(kwargs))
+    return log
 
 def complement(func: Callable) -> Callable:
     'Return the complement of a function (the boolean opposite)'
