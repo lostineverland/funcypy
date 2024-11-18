@@ -2,7 +2,8 @@
 
 import functools
 from typing import Callable, Generator, Tuple, Iterable, Iterator, Any, Union
-from . funcy import complement
+from . funcy import complement, log
+from . seqs import concat
 
 missing = object()
 
@@ -128,24 +129,50 @@ def expand_(key_val: Iterable[Tuple[str, Any]], mem=''):
             col = [(k, val)]
 
 def expand(key_val: dict, base: str = ''):
-    return dict(collect(key_val))
+    return nesten(key_val)
 
-def collect(key_val: Union[Iterator, dict], base: str=''):
+def collect(key_val: Union[Iterator, dict], base: str='', nesting: int=50) -> Generator[Tuple[str, Any], None, None]:
     if isinstance(key_val, dict): key_val = iter(key_val.items())
     keys, val = next(key_val, (None, None))
-    while keys:
+    while keys and nesting > 0:
+        k = keys
         if base:
-            keys = keys.replace(base + '.', '', 1)
-        print('long keys?', len(keys.split('.', 1)), keys.split('.', 1))
-        if len(b_k := keys.split('.', 1)) > 1:
+            k = keys.replace(base + '.', '', 1)
+            if base not in keys: break
+        if len(b_k := k.split('.', 1)) > 1:
             key, rest_keys = b_k
-            vals = dict(collect(key_val, '.'.join(filter(None, [base, key]))))
+            log(nesting=nesting, base=base, keys=keys, b_k=k.split('.', 1), key=key, val=val, k=k, n_base='.'.join(filter(None, [base, key])))
+            vals = dict(collect(
+                concat([(keys, val)], key_val),
+                base='.'.join(filter(None, [base, key])),
+                nesting=nesting - 1,
+                ))
             if all(map(str.isnumeric, vals.keys())): vals = list(vals.values())
             # print (key, vals)
             yield key, vals
         else:
             key = b_k[0]
-            print (key, val)
+            log(nesting=nesting, base=base, keys=keys, b_k=b_k[0], key=key, val=val, k=k)
             yield key, val
         keys, val = next(key_val, (None, None))
 
+def nesten(key_val: Union[Iterator, dict]) -> dict:
+    if isinstance(key_val, dict): key_val = iter(key_val.items())
+    nested_dict = {}
+    for flat_key, value in key_val:
+        keys = flat_key.split(".")
+        current_level = nested_dict
+        
+        for key in keys[:-1]:
+            if key.isdigit():
+                key = int(key)
+            if key not in current_level:
+                current_level[key] = {}
+            current_level = current_level[key]
+        
+        last_key = keys[-1]
+        if last_key.isdigit():
+            last_key = int(last_key)
+        current_level[last_key] = value
+        
+    return nested_dict
