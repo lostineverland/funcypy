@@ -59,13 +59,42 @@ def once(func: Callable) -> Callable:
         return res[0]
     return f
 
-def contains(*items: Tuple) -> Callable:
+def superset(*items: Tuple) -> Callable:
     """Given a collection it returns the `superset` function of a set
         wrapped in a more useful form, such that:
-        contains('some', 1, 'me')('some') == True
-        contains('some', 1, 'me')(1) == True
-        contains('some', 1, 'me')('other') == False
+        superset('some', 1, 'me')('some') == True
+        superset('some', 1, 'me')(1, me) == True
+        superset('some', 1, 'me')('some', 'other') == False
     """
-    return lambda item: set(items).issuperset([item])
+    return lambda *i: set(items).issuperset(i)
 
-has = contains
+has = superset
+contains = superset
+
+def subset(*items: Tuple) -> Callable:
+    """Given a collection it returns the `subset` function of a set
+        wrapped in a more useful form, such that:
+        subset('some')('some', 1, 'me') == True
+        subset(1, 'me')('some', 1, 'me') == True
+        subset('some', 'other')('some', 1, 'me') == False
+    """
+    return lambda *i: set(items).issubset(i)
+
+all_of = subset
+
+def intersect(*items: Tuple) -> Callable:
+    """Given a collection it returns the `intersect` function of a set
+        wrapped in a more useful form, such that:
+        intersect('some')('some', 1, 'me') == ['some']
+        intersect(1, 'me')('some', 1, 'me') == [1, 'me']
+        intersect('some', 'other')('some', 1, 'me') == ['some']
+      * order is consistent but not so predictable
+    """
+    return lambda *i: list(set(items).intersection(i))
+
+any_of = intersect
+
+def juxt(*funcs: Callable) -> Callable:
+    'Juxtapose functions'
+    return lambda *i: [f(*i) for f in funcs]
+
