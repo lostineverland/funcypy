@@ -121,7 +121,10 @@ def flatten(mseq: HashCol, _name_space: str="", depth: int=-1, follow_list: bool
         else:
             yield k[1:], val
 
-def nesten(key_val: Iterable, base: str='') -> Generator[Tuple[str, Any], Tuple[str, Any], None]:
+def nestten(key_val: Iterable, base: str='') -> Generator[Tuple[str, Any], Tuple[str, Any], None]:
+    '''This is the complement of flatten, such that:
+        dict(nestten(flatten(val, follow_list=True))) == val
+    '''
     if not base: key_val = iterator(key_val)
     keys, val = next(key_val, (None, None))
     while keys:
@@ -134,7 +137,7 @@ def nesten(key_val: Iterable, base: str='') -> Generator[Tuple[str, Any], Tuple[
         if len(b_k := k.split('.', 1)) > 1:
             key, rest_keys = b_k
             kk_vv = key_val.send([keys, val])
-            vals = dict(nesten(
+            vals = dict(nestten(
                 key_val,
                 base='.'.join(filter(None, [base, key])),
                 ))
