@@ -41,5 +41,5 @@ def field_filter(fields, obj=missing):
 def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
     return dict(cols.flatten(obj, _name_space=_name_space, depth=depth, follow_list=follow_list))
 
-def nesten(obj: dict) -> dict:
-    return dict(cols.nesten(obj.items()))
+def nestten(obj: dict) -> dict:
+    return dict(cols.nestten(obj.items()))
