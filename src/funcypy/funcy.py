@@ -3,15 +3,15 @@
 import functools, json
 from typing import Any, Callable, Tuple
 
-def log(x=None, name='value', **kwargs):
+def log(x=None, name='value', logger=print, **kwargs):
     '''A logging function which returns the value (as opposed to print which returns `None`)
         but will also print a JSON `{value: x}` of the given value. It also allows for
         kwargs to be included in the JSON.
     '''
     if x:
-        print(json.dumps({name: x, **kwargs}))
+        logger(json.dumps({name: x, **kwargs}))
     else:
-        print(json.dumps(kwargs))
+        logger(json.dumps(kwargs))
     return log
 
 def complement(func: Callable) -> Callable:
