@@ -56,7 +56,15 @@ def concat(*seqs: Tuple[Iterable]) -> Iterable:
             yield i
 
 def iterator(seq: Iterable) -> Generator:
-    'An iterator which allows a rewind'
+    '''An iterator which allows a "rewind" in the form of value re-insertion
+        eg:
+        items = iterator([2, 3, 5])
+        next(items)   # 2
+        next(items)   # 3
+        items.send(4) # None
+        next(items)   # 4
+        next(items)   # 5
+    '''
     if not isinstance(seq, Iterator): seq = iter(seq)
     i = next(seq, missing)
     while i is not missing:
