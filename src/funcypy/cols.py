@@ -2,58 +2,68 @@
 
 import functools
 from typing import Callable, Generator, Tuple, Iterable, Iterator, Any, Union
-from . funcy import complement
+from . funcy import complement, has
 from . seqs import concat, iterator
 
-missing = object()
 
-def keymap(oper: Callable, obj: dict=missing) -> Generator:
+HashCol = Union[dict, Iterable[Tuple[str, Any]]]
+Missing = object
+HashColOrMissing = Union[HashCol, Missing]
+
+missing: Missing= object()
+
+def keymap(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
     'Perform a map operation over the keys of a dict'
-    if obj is missing: return functools.partial(keymap, oper)
-    for k, v in obj.items():
+    if mseq is missing: return functools.partial(keymap, oper)
+    if isinstance(mseq, dict): mseq = mseq.items()
+    for k, v in mseq:
         yield oper(k), v
 
-def valmap(oper: Callable, obj: dict=missing) -> Generator:
+def valmap(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
     'Perform a map operation over the values of a dict'
-    if obj is missing: return functools.partial(valmap, oper)
-    for k, v in obj.items():
+    if mseq is missing: return functools.partial(valmap, oper)
+    if isinstance(mseq, dict): mseq = mseq.items()
+    for k, v in mseq:
         yield k, oper(v)
 
-def itemmap(oper: Callable, obj: dict=missing) -> Generator:
+def itemmap(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
     'Perform a map operation over the items of a dict'
-    if obj is missing: return functools.partial(itemmap, oper)
-    for k, v in obj.items():
+    if mseq is missing: return functools.partial(itemmap, oper)
+    if isinstance(mseq, dict): mseq = mseq.items()
+    for k, v in mseq:
         yield oper(k, v)
 
-def keyfilter(oper: Callable, obj: dict=missing) -> Generator:
+def keyfilter(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
     'Perform a filter operation over the keys of a dict'
-    if obj is missing: return functools.partial(keyfilter, oper)
-    for k, v in obj.items():
+    if mseq is missing: return functools.partial(keyfilter, oper)
+    if isinstance(mseq, dict): mseq = mseq.items()
+    for k, v in mseq:
         if oper(k): yield k, v
 
-def valfilter(oper: Callable, obj: dict=missing) -> Generator:
+def valfilter(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
     'Perform a filter operation over the vals of a dict'
-    if obj is missing: return functools.partial(valfilter, oper)
-    for k, v in obj.items():
+    if mseq is missing: return functools.partial(valfilter, oper)
+    if isinstance(mseq, dict): mseq = mseq.items()
+    for k, v in mseq:
         if oper(v): yield k, v
 
-def removekey(oper: Callable, obj: dict=missing) -> Generator:
+def removekey(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
     'Perform a remove operation over the keys of a dict'
-    return keyfilter(complement(oper), obj)
+    return keyfilter(complement(oper), mseq)
 
-def removeval(oper: Callable, obj: dict=missing) -> Generator:
+def removeval(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
     'Perform a remove operation over the vals of a dict'
-    return valfilter(complement(oper), obj)
+    return valfilter(complement(oper), mseq)
 
-def field_filter(fields: Tuple, obj: dict=missing) -> dict:
+def field_filter(fields: Tuple, mseq: HashColOrMissing=missing) -> Generator:
     'apply a white list filter (fields) to the dict keys'
-    if obj is missing: return functools.partial(field_filter, fields)
+    if mseq is missing: return functools.partial(field_filter, fields)
     return keyfilter(
-        lambda k: k in fields,
-        obj
+        has(*fields),
+        mseq
     )
 
-def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False, all_possible_keys=False) -> Generator:
+def flatten(mseq: HashCol, _name_space: str="", depth: int=-1, follow_list: bool=False, all_possible_keys=False) -> Generator:
     """Takes a nested dict and flattens the values such that:
     {
         "some": {
@@ -92,7 +102,8 @@ def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=Fal
     `all_possible_keys` contains duplicate data and should only be used to explore
     the key space 
     """
-    for key, val in obj.items():
+    if isinstance(mseq, dict): mseq = mseq.items()
+    for key, val in mseq:
         k = ".".join([_name_space, key])
         if isinstance(val, dict) and depth != 0:
             if all_possible_keys: yield k[1:], val
