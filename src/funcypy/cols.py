@@ -2,7 +2,7 @@
 
 import functools
 from typing import Callable, Generator, Tuple, Iterable, Iterator, Any, Union
-from . funcy import complement, has
+from . funcy import complement, has, partial
 from . seqs import concat, iterator
 
 
@@ -12,52 +12,54 @@ HashColOrMissing = Union[HashCol, Missing]
 
 missing: Missing= object()
 
-def keymap(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
+@partial
+def keymap(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a map operation over the keys of a dict'
-    if mseq is missing: return functools.partial(keymap, oper)
     if isinstance(mseq, dict): mseq = mseq.items()
     for k, v in mseq:
         yield oper(k), v
 
-def valmap(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
+@partial
+def valmap(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a map operation over the values of a dict'
-    if mseq is missing: return functools.partial(valmap, oper)
     if isinstance(mseq, dict): mseq = mseq.items()
     for k, v in mseq:
         yield k, oper(v)
 
-def itemmap(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
+@partial
+def itemmap(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a map operation over the items of a dict'
-    if mseq is missing: return functools.partial(itemmap, oper)
     if isinstance(mseq, dict): mseq = mseq.items()
     for k, v in mseq:
         yield oper(k, v)
 
-def keyfilter(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
+@partial
+def keyfilter(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a filter operation over the keys of a dict'
-    if mseq is missing: return functools.partial(keyfilter, oper)
     if isinstance(mseq, dict): mseq = mseq.items()
     for k, v in mseq:
         if oper(k): yield k, v
 
-def valfilter(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
+@partial
+def valfilter(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a filter operation over the vals of a dict'
-    if mseq is missing: return functools.partial(valfilter, oper)
     if isinstance(mseq, dict): mseq = mseq.items()
     for k, v in mseq:
         if oper(v): yield k, v
 
-def removekey(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
+@partial
+def removekey(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a remove operation over the keys of a dict'
     return keyfilter(complement(oper), mseq)
 
-def removeval(oper: Callable, mseq: HashColOrMissing=missing) -> Generator:
+@partial
+def removeval(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a remove operation over the vals of a dict'
     return valfilter(complement(oper), mseq)
 
-def field_filter(fields: Tuple, mseq: HashColOrMissing=missing) -> Generator:
+@partial
+def field_filter(fields: Tuple, mseq: HashCol) -> Generator:
     'apply a white list filter (fields) to the dict keys'
-    if mseq is missing: return functools.partial(field_filter, fields)
     return keyfilter(
         has(*fields),
         mseq

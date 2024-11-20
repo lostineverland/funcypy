@@ -25,14 +25,17 @@ def rcomp(*funcs: Callable) -> Callable:
     'reverse function composition'
     return lambda y: functools.reduce(lambda x, f: f(x), funcs, y)
 
-def partial(func: Callable) -> Callable:
-    '''The functtools.partial function as a decorator, it works very much like the 
-        @curry decorator, except it always returns a function which will
-        execute the next time it is called (regardless if there are missing
-        arguments)
+def partial(func: Callable, count: int=1) -> Callable:
+    '''The functtools.partial function as a decorator with a count trigger,
+        it works very much like the @curry decorator, except it will 
+        either (depending on the argument count) run or return a function 
+        which will execute the next time it is called (regardless if 
+        there  are missing arguments).
     '''
     @functools.wraps(func)
     def f(*args, **kwargs):
+        if sum([len(args), len(kwargs)]) > count:
+            return func(*args, **kwargs)
         return functools.partial(func, *args, **kwargs)
     return f
 

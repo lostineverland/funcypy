@@ -1,41 +1,41 @@
 'Operating on collections'
 
 import functools
-from typing import Callable
+from typing import Callable, List
 from .. import cols
+from .. funcy import partial
 
-missing = object()
 
-def keymap(oper: Callable, obj: dict=missing) -> dict:
-    if obj is missing: return functools.partial(keymap, oper)
+@partial
+def keymap(oper: Callable, obj: dict) -> dict:
     return dict(cols.keymap(oper, obj))
 
-def valmap(oper: Callable, obj: dict=missing) -> dict:
-    if obj is missing: return functools.partial(valmap, oper)
+@partial
+def valmap(oper: Callable, obj: dict) -> dict:
     return dict(cols.valmap(oper, obj))
 
-def itemmap(oper: Callable, obj: dict=missing) -> dict:
-    if obj is missing: return functools.partial(itemmap, oper)
+@partial
+def itemmap(oper: Callable, obj: dict) -> dict:
     return dict(cols.itemmap(oper, obj))
 
-def keyfilter(oper: Callable, obj: dict=missing) -> dict:
-    if obj is missing: return functools.partial(keyfilter, oper)
+@partial
+def keyfilter(oper: Callable, obj: dict) -> dict:
     return dict(cols.keyfilter(oper, obj))
 
-def valfilter(oper: Callable, obj: dict=missing) -> dict:
-    if obj is missing: return functools.partial(valfilter, oper)
+@partial
+def valfilter(oper: Callable, obj: dict) -> dict:
     return dict(cols.valfilter(oper, obj))
 
-def removekey(oper: Callable, obj: dict=missing) -> dict:
-    if obj is missing: return functools.partial(removekey, oper)
+@partial
+def removekey(oper: Callable, obj: dict) -> dict:
     return dict(cols.removekey(oper, obj))
 
-def removeval(oper: Callable, obj: dict=missing) -> dict:
-    if obj is missing: return functools.partial(removeval, oper)
+@partial
+def removeval(oper: Callable, obj: dict) -> dict:
     return dict(cols.removeval(oper, obj))
 
-def field_filter(fields, obj=missing):
-    if obj is missing: return functools.partial(field_filter, fields)
+@partial
+def field_filter(fields: List[str], obj: dict):
     return dict(cols.field_filter(fields, obj))
 
 def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
