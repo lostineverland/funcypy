@@ -65,11 +65,11 @@ def dt_from_iso(iso_dt):
             datetime.datetime.strptime(iso_dt, format).timestamp())
     return dt.replace(tzinfo=datetime.timezone.utc)
 
-def epoch_to_iso(epoch, utc=True):
+def epoch_to_iso(epoch, utc=True, iso_fmt='seconds'):
     if utc:
-        return datetime.datetime.utcfromtimestamp(epoch).strftime(ISO_8601_SECONDS) + 'Z'
+        return datetime.datetime.utcfromtimestamp(epoch).strftime(iso_formats.get(iso_fmt, 'seconds')) + 'Z'
     else:
-        return datetime.datetime.fromtimestamp(epoch).strftime(ISO_8601_SECONDS)
+        return datetime.datetime.fromtimestamp(epoch).strftime(iso_formats.get(iso_fmt, 'seconds'))
 
 def iso_to_epoch(iso_dt):
     dt = dt_from_iso(iso_dt)
