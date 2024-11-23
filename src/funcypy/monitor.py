@@ -2,11 +2,11 @@
 '''
 import functools
 import time, datetime
-from typing import Callable
+from typing import Callable, Any
 from . times import epoch_to_iso
 
 
-def json_serializer(obj: object):
+def json_serializer(obj: object) -> Callable:
     if isinstance(obj, set):
         return str(obj)
     
@@ -21,7 +21,7 @@ def json_serializer(obj: object):
     
     raise TypeError(f"Type {type(obj)} not serializable")
 
-def log(x=None, name='value', logger=print, **kwargs):
+def log(x=None, name='value', logger=print, **kwargs) -> Any:
     '''A logging function which returns the value (as opposed to print which returns `None`)
         but will also print a JSON `{value: x}` of the given value. It also allows for
         kwargs to be included in the JSON.
@@ -55,5 +55,7 @@ def track(func: Callable, erronly=True) -> Callable:
         except Exception as e:
             try:
                 log(func=func.__name__, args=args, kwargs=kwargs, error=e.args)
+            except:
+                pass
             raise e
     return f
