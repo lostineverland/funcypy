@@ -5,12 +5,10 @@ from funcypy.funcy import *
 
 @partial
 def add(x, y):
-    print(f'{x} + {y}:', x + y)
     return x + y
 
 @partial
 def pow(y, x):
-    print(f'{x} ** {y}:', x ** y)
     return x ** y
 
 def test_rcomp_complement():

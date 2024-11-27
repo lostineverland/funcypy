@@ -1,8 +1,9 @@
 '''It's good to have data about the functions and processes that we run
 '''
 import functools
+import json
 import time, datetime
-from typing import Callable, Any
+from typing import Callable, Any, Dict
 from . times import epoch_to_iso
 
 
@@ -42,7 +43,7 @@ def log(x=None, name='value', logger=print, **kwargs) -> Any:
         print({**kwargs, 'logging_error': e})
     return log
 
-def track(func: Callable, erronly=True) -> Callable:
+def track(func: Callable, erronly: bool=True, logger: Dict={}) -> Callable:
     '''This function wraps any function and logs metrics on the function'''
     @functools.wraps(func)
     def f(*args, **kwargs):
@@ -51,11 +52,12 @@ def track(func: Callable, erronly=True) -> Callable:
             res = func(*args, **kwargs)
             t1 = time.time()
             if not erronly:
-                log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0)
+                log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **logger)
         except Exception as e:
             try:
-                log(func=func.__name__, args=args, kwargs=kwargs, error=e.args)
+                log(func=func.__name__, args=args, kwargs=kwargs, error=e.args, **logger)
             except:
                 pass
             raise e
+        return res
     return f
