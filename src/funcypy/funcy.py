@@ -1,7 +1,8 @@
 'Operating on functions'
 
 import functools, json
-from typing import Any, Callable, Tuple
+from typing import Any, Callable, Tuple, Dict, Union
+from funcypy.monitor import track
 
 def log(x=None, name='value', logger=print, **kwargs):
     '''A logging function which returns the value (as opposed to print which returns `None`)
@@ -21,8 +22,12 @@ def complement(func: Callable) -> Callable:
         return not func(*args, **kwargs)
     return f
 
-def rcomp(*funcs: Callable) -> Callable:
+def rcomp(*funcs: Callable, debug: Union[bool, Dict]=False) -> Callable:
     'reverse function composition'
+    if debug:
+        if isinstance(debug, dict):
+            return lambda y: functools.reduce(lambda x, f: track(f, erronly=False, logger=debug)(x), funcs, y)
+        return lambda y: functools.reduce(lambda x, f: track(f, erronly=False)(x), funcs, y)
     return lambda y: functools.reduce(lambda x, f: f(x), funcs, y)
 
 def partial(func: Callable, count: int=1) -> Callable:
@@ -36,13 +41,17 @@ def partial(func: Callable, count: int=1) -> Callable:
     def f(*args, **kwargs):
         if sum([len(args), len(kwargs)]) > count:
             return func(*args, **kwargs)
-        return functools.partial(func, *args, **kwargs)
+        return functools.update_wrapper(functools.partial(func, *args, **kwargs), func)
     return f
 
-def pipe(*args: Tuple[Any, Callable]):
+def pipe(*args: Tuple[Any, Callable], debug: Union[bool, Dict]=False) -> Any:
     "run an input through a list of functions"
     y = args[0]
     funcs = args[1:]
+    if debug:
+        if isinstance(debug, dict):
+            return functools.reduce(lambda x, f: track(f, erronly=False, logger=debug)(x), funcs, y)
+        return functools.reduce(lambda x, f: track(f, erronly=False)(x), funcs, y)
     return functools.reduce(lambda x, f: f(x), funcs, y)
 
 def once(func: Callable) -> Callable:
