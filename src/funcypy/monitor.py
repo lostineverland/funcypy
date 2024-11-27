@@ -1,9 +1,10 @@
 '''It's good to have data about the functions and processes that we run
 '''
 import functools
+import random
 import json
 import time, datetime
-from typing import Callable, Any, Dict
+from typing import Callable, Any, Dict, Union
 from . times import epoch_to_iso
 
 
@@ -43,16 +44,24 @@ def log(x=None, name='value', logger=print, **kwargs) -> Any:
         print({**kwargs, 'logging_error': e})
     return log
 
-def track(func: Callable, erronly: bool=True, logger: Dict={}) -> Callable:
-    '''This function wraps any function and logs metrics on the function'''
+def track(func: Callable, frequency: Union[int, Callable]=0, **logger: Dict) -> Callable:
+    '''This function wraps any function and logs metrics on the function
+        func: the funcion being tracked
+        frequency: an integer for sampling frequency (1/frequency) or a function which returns a boolean
+            such that frequency(func(*args **kwargs)) -> bool
+    '''
     @functools.wraps(func)
     def f(*args, **kwargs):
         try:
             t0 = time.time()
             res = func(*args, **kwargs)
             t1 = time.time()
-            if not erronly:
-                log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **logger)
+            if frequency:
+                if callable(frequency):
+                    if frequency(res):
+                        log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **logger)
+                elif random.randint(1, frequency) == 1:
+                    log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **logger)
         except Exception as e:
             try:
                 log(func=func.__name__, args=args, kwargs=kwargs, error=e.args, **logger)
