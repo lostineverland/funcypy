@@ -1,6 +1,7 @@
 'Operating on functions'
 
-import functools, json
+import functools
+import json
 from typing import Any, Callable, Tuple, Dict, Union
 from funcypy.monitor import track
 
@@ -22,12 +23,16 @@ def complement(func: Callable) -> Callable:
         return not func(*args, **kwargs)
     return f
 
-def rcomp(*funcs: Callable, debug: Union[bool, Dict]=False) -> Callable:
-    'reverse function composition'
-    if debug:
-        if isinstance(debug, dict):
-            return lambda y: functools.reduce(lambda x, f: track(f, erronly=False, logger=debug)(x), funcs, y)
-        return lambda y: functools.reduce(lambda x, f: track(f, erronly=False)(x), funcs, y)
+def rcomp(*funcs: Callable, monitor: Union[bool, Dict]=False) -> Callable:
+    '''reverse function composition
+        the monitor option allows for tracking of the functions for debugging
+        or with a frequency keyword (int or function) for random sampling
+    '''
+    if monitor:
+        if isinstance(monitor, dict):
+            opts = {'frequency': 1, **monitor}
+            return lambda y: functools.reduce(lambda x, f: track(f, **opts)(x), funcs, y)
+        return lambda y: functools.reduce(lambda x, f: track(f, frequency=1)(x), funcs, y)
     return lambda y: functools.reduce(lambda x, f: f(x), funcs, y)
 
 def partial(func: Callable, count: int=1) -> Callable:
@@ -44,14 +49,18 @@ def partial(func: Callable, count: int=1) -> Callable:
         return functools.update_wrapper(functools.partial(func, *args, **kwargs), func)
     return f
 
-def pipe(*args: Tuple[Any, Callable], debug: Union[bool, Dict]=False) -> Any:
-    "run an input through a list of functions"
+def pipe(*args: Tuple[Any, Callable], monitor: Union[int, Dict]=False) -> Any:
+    """run an input through a list of functions
+        the monitor option allows for tracking of the functions for debugging
+        or with a frequency keyword (int or function) for random sampling
+    """
     y = args[0]
     funcs = args[1:]
-    if debug:
-        if isinstance(debug, dict):
-            return functools.reduce(lambda x, f: track(f, erronly=False, logger=debug)(x), funcs, y)
-        return functools.reduce(lambda x, f: track(f, erronly=False)(x), funcs, y)
+    if monitor:
+        if isinstance(monitor, dict):
+            opts = {'frequency': 1, **monitor}
+            return functools.reduce(lambda x, f: track(f, **opts)(x), funcs, y)
+        return functools.reduce(lambda x, f: track(f, frequency=1)(x), funcs, y)
     return functools.reduce(lambda x, f: f(x), funcs, y)
 
 def once(func: Callable) -> Callable:

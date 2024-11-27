@@ -15,12 +15,23 @@ def pow(y, x):
     return x ** y
 
 def test_track_rcomp(capsys):
-    assert rcomp(add(3), debug=dict(namespace='me'))(2)
+    rcomp(add(3), monitor=dict(namespace='me'))(2)
+    std = capsys.readouterr()
+    assert json.loads(std.out)['namespace'] == 'me'
+    rcomp(add(3), pow(2), monitor=dict(frequency=lambda x: x == 3))(2)
+    std = capsys.readouterr()
+    assert std.out == ''
+    rcomp(add(3), pow(2), monitor=dict(frequency=lambda x: x == 25, namespace='me'))(2)
     std = capsys.readouterr()
     assert json.loads(std.out)['namespace'] == 'me'
 
 def test_track_pipe(capsys):
-    pipe(2, add(3), debug=dict(namespace='some'))
+    pipe(2, add(3), monitor=dict(namespace='some'))
     std = capsys.readouterr()
     assert json.loads(std.out)['namespace'] == 'some'
-
+    pipe(2, add(3), pow(2), monitor=dict(frequency=lambda x: x == 3))
+    std = capsys.readouterr()
+    assert std.out == ''
+    pipe(2, add(3), pow(2), monitor=dict(frequency=lambda x: x == 25, namespace='some'))
+    std = capsys.readouterr()
+    assert json.loads(std.out)['namespace'] == 'some'
