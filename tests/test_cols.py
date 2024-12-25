@@ -41,6 +41,10 @@ def test_removeval(data):
     assert cols.removeval(is_even, data) == dict(some=1)
     assert cols.removeval(is_even)(data) == dict(some=1)
 
+def test_removevalnone(data):
+    d = {**data, 'on': 3, 'what': None}
+    assert cols.removevalnone(d) == dict(some=1, me=2, on=3)
+
 def test_field_filter(data):
     sample = dict(some=1, me=2, on=3, what=4)
     assert list(map(cols.field_filter(['some', 'me', 'for']), 3 * [sample])) == 3 * [data]
