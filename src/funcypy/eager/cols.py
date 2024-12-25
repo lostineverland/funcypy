@@ -34,6 +34,9 @@ def removekey(oper: Callable, obj: dict) -> dict:
 def removeval(oper: Callable, obj: dict) -> dict:
     return dict(cols.removeval(oper, obj))
 
+def removevalnone(obj: dict) -> dict:
+    return dict(cols.removevalnone(obj))
+
 @partial
 def field_filter(fields: List[str], obj: dict):
     return dict(cols.field_filter(fields, obj))

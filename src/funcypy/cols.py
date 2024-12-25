@@ -53,6 +53,10 @@ def removeval(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a remove operation over the vals of a dict'
     return valfilter(complement(oper), mseq)
 
+def removevalnone(mseq: HashCol) -> Generator:
+    'Remove items with `None` vals in a dict'
+    return valfilter(lambda x: x is not None, mseq)
+
 @partial
 def field_filter(fields: Tuple, mseq: HashCol) -> Generator:
     'apply a white list filter (fields) to the dict keys'
