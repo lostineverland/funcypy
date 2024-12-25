@@ -7,10 +7,6 @@ from . seqs import concat, iterator
 
 
 HashCol = Union[dict, Iterable[Tuple[str, Any]]]
-Missing = object
-HashColOrMissing = Union[HashCol, Missing]
-
-missing: Missing= object()
 
 @partial
 def keymap(oper: Callable, mseq: HashCol) -> Generator:
