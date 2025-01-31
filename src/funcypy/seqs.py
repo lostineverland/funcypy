@@ -5,6 +5,10 @@ from typing import Generator, Iterable, Iterator, List, Tuple, Any, Union
 
 missing = object()
 
+def is_lazy(obj: Any) -> bool:
+    isLazy = lambda e: hasattr(obj, e)
+    return all(hasattr(obj, i) for i in ['__next__', '__iter__'])
+
 def take(n: int, seq: Iterable=missing) -> List:
     if seq is missing: return functools.partial(take, n)
     vals = []
