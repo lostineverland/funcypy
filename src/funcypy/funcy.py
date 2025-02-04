@@ -5,6 +5,7 @@ import json
 from typing import Any, Callable, Tuple, Dict, Union, Iterable
 from funcypy.seqs import is_iterable
 from funcypy.monitor import track
+missing = object()
 
 def log(x=None, name='value', logger=print, **kwargs):
     '''A logging function which returns the value (as opposed to print which returns `None`)
@@ -36,13 +37,15 @@ def rcomp(*funcs: Callable, monitor: Union[bool, Dict]=True) -> Callable:
         return lambda y: functools.reduce(lambda x, f: track(f, frequency=0)(x), funcs, y)
     return lambda y: functools.reduce(lambda x, f: f(x), funcs, y)
 
-def partial(func: Callable, count: int=1) -> Callable:
+def partial(func: Callable=missing, count: int=1) -> Callable:
     '''The functtools.partial function as a decorator with a count trigger,
         it works very much like the @curry decorator, except it will 
         either (depending on the argument count) run or return a function 
         which will execute the next time it is called (regardless if 
         there  are missing arguments).
     '''
+    if func is missing: return functools.partial(partial, count=count)
+    if not callable(func): return functools.partial(partial, count=func)
     @functools.wraps(func)
     def f(*args, **kwargs):
         if sum([len(args), len(kwargs)]) > count:

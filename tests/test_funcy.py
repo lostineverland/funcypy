@@ -3,11 +3,11 @@
 import pytest
 from funcypy.funcy import *
 
-@partial
+@partial(count=1)
 def add(x, y):
     return x + y
 
-@partial
+@partial(1)
 def pow(y, x):
     return x ** y
 
