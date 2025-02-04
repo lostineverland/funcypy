@@ -2,12 +2,15 @@
 
 import functools
 from typing import Generator, Iterable, Iterator, List, Tuple, Any, Union
-
+from collections.abc import Iterable as IterableType
 missing = object()
 
 def is_lazy(obj: Any) -> bool:
     isLazy = lambda e: hasattr(obj, e)
     return all(hasattr(obj, i) for i in ['__next__', '__iter__'])
+
+def is_iterable(obj: Any) -> bool:
+    return isinstance(obj, IterableType)
 
 def take(n: int, seq: Iterable=missing) -> List:
     if seq is missing: return functools.partial(take, n)

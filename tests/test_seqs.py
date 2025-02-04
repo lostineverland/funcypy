@@ -7,7 +7,7 @@ from funcypy import seqs
 def data():
     return iter(range(10))
 
-def test_lazy(data):
+def test_is_lazy(data):
     def loop():
         for i in range(10):
             yield i
@@ -16,6 +16,14 @@ def test_lazy(data):
     assert seqs.is_lazy(i for i in data)
     assert not seqs.is_lazy(range(10))
     assert not seqs.is_lazy([i for i in data])
+
+def test_is_iterable(data):
+    assert seqs.is_iterable(data)
+    assert seqs.is_iterable(range(5))
+    assert seqs.is_iterable([1, 2, 3])
+    assert seqs.is_iterable((1, 2, 3))
+    assert seqs.is_iterable('abc')
+    assert not seqs.is_iterable(123)
 
 def test_take(data):
     assert list(seqs.take(2)(data)) == [0, 1]

@@ -2,7 +2,8 @@
 
 import functools
 import json
-from typing import Any, Callable, Tuple, Dict, Union
+from typing import Any, Callable, Tuple, Dict, Union, Iterable
+from funcypy.seqs import is_iterable
 from funcypy.monitor import track
 
 def log(x=None, name='value', logger=print, **kwargs):
@@ -23,7 +24,7 @@ def complement(func: Callable) -> Callable:
         return not func(*args, **kwargs)
     return f
 
-def rcomp(*funcs: Callable, monitor: Union[bool, Dict]=False) -> Callable:
+def rcomp(*funcs: Callable, monitor: Union[bool, Dict]=True) -> Callable:
     '''reverse function composition
         the monitor option allows for tracking of the functions for debugging
         or with a frequency keyword (int or function) for random sampling
@@ -32,7 +33,7 @@ def rcomp(*funcs: Callable, monitor: Union[bool, Dict]=False) -> Callable:
         if isinstance(monitor, dict):
             opts = {'frequency': 1, **monitor}
             return lambda y: functools.reduce(lambda x, f: track(f, **opts)(x), funcs, y)
-        return lambda y: functools.reduce(lambda x, f: track(f, frequency=1)(x), funcs, y)
+        return lambda y: functools.reduce(lambda x, f: track(f, frequency=0)(x), funcs, y)
     return lambda y: functools.reduce(lambda x, f: f(x), funcs, y)
 
 def partial(func: Callable, count: int=1) -> Callable:
@@ -49,7 +50,7 @@ def partial(func: Callable, count: int=1) -> Callable:
         return functools.update_wrapper(functools.partial(func, *args, **kwargs), func)
     return f
 
-def pipe(*args: Tuple[Any, Callable], monitor: Union[int, Dict]=False) -> Any:
+def pipe(*args: Tuple[Any, Callable], monitor: Union[bool, Dict]=True) -> Any:
     """run an input through a list of functions
         the monitor option allows for tracking of the functions for debugging
         or with a frequency keyword (int or function) for random sampling
@@ -60,7 +61,7 @@ def pipe(*args: Tuple[Any, Callable], monitor: Union[int, Dict]=False) -> Any:
         if isinstance(monitor, dict):
             opts = {'frequency': 1, **monitor}
             return functools.reduce(lambda x, f: track(f, **opts)(x), funcs, y)
-        return functools.reduce(lambda x, f: track(f, frequency=1)(x), funcs, y)
+        return functools.reduce(lambda x, f: track(f, frequency=0)(x), funcs, y)
     return functools.reduce(lambda x, f: f(x), funcs, y)
 
 def once(func: Callable) -> Callable:
@@ -119,3 +120,12 @@ def juxt(*funcs: Callable) -> Callable:
     'Juxtapose functions'
     return lambda *i: [f(*i) for f in funcs]
 
+def pmap(func: Union[Callable, Iterable[Callable]], monitor: Union[bool, Dict]=True) -> Callable:
+    if is_iterable(func):
+        return functools.partial(map, rcomp(*func, monitor=monitor))
+    if monitor:
+        if isinstance(monitor, dict):
+            opts = {'frequency': 1, **monitor}
+            return functools.partial(map, track(func, **opts))
+        return functools.partial(map, track(func, frequency=0))
+    return functools.partial(map, func)
