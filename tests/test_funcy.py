@@ -36,3 +36,7 @@ def test_intersect():
 
 def test_juxt():
     assert juxt(subset(3, 4, 5), intersect(3, 4, 5), superset(3, 4, 5))(3, 5) == [False, [3, 5], True]
+
+def test_pmap():
+    assert list(pmap(add(3))(range(5))) == list(map(add(3), range(5)))
+    assert list(pmap([add(3), add(1)])(range(5))) == list(map(add(4), range(5)))

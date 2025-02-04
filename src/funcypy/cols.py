@@ -7,6 +7,8 @@ from . seqs import concat, iterator
 
 
 HashCol = Union[dict, Iterable[Tuple[str, Any]]]
+# These are for the list of dicts
+HashItems = Iterable[HashCol]
 
 @partial
 def keymap(oper: Callable, mseq: HashCol) -> Generator:

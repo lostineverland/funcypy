@@ -49,6 +49,7 @@ def track(func: Callable, frequency: Union[int, Callable]=0, **logger: Dict) -> 
         func: the funcion being tracked
         frequency: an integer for sampling frequency (1/frequency) or a function which returns a boolean
             such that frequency(func(*args **kwargs)) -> bool
+            A `False` or falsy value will only log on error
     '''
     @functools.wraps(func)
     def f(*args, **kwargs):

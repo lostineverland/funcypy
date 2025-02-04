@@ -24,6 +24,12 @@ def test_track_rcomp(capsys):
     rcomp(add(3), pow(2), monitor=dict(frequency=lambda x: x == 25, namespace='me'))(2)
     std = capsys.readouterr()
     assert json.loads(std.out)['namespace'] == 'me'
+    try:
+        rcomp(add(3))('a')
+    except:
+        pass
+    std = capsys.readouterr()
+    assert json.loads(std.out)['args'] == ["a"]
 
 def test_track_pipe(capsys):
     pipe(2, add(3), monitor=dict(namespace='some'))
