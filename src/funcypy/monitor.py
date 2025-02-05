@@ -6,7 +6,9 @@ import json
 import time, datetime
 from typing import Callable, Any, Dict, Union
 from . times import epoch_to_iso
+from . seqs import is_lazy
 
+missing = object()
 
 def json_serializer(obj: object) -> Callable:
     if isinstance(obj, set):
@@ -15,13 +17,16 @@ def json_serializer(obj: object) -> Callable:
     if isinstance(obj, datetime):
         return epoch_to_iso(obj.timestamp())
     
+    if is_lazy(obj):
+        return str(obj)
+    
     if hasattr(obj, 'to_json'):
         return obj.to_json()
     
     if hasattr(obj, 'to_dict'):
         return obj.to_dict()
     
-    raise TypeError(f"Type {type(obj)} not serializable")
+    raise TypeError('Type {} not serializable'.format(str(type(obj))))
 
 def log(x=None, name='value', logger=print, **kwargs) -> Any:
     '''A logging function which returns the value (as opposed to print which returns `None`)
@@ -32,25 +37,29 @@ def log(x=None, name='value', logger=print, **kwargs) -> Any:
     try:
         logger(json.dumps(kwargs, default=json_serializer))
     except TypeError as e:
-        logger(json.dumps({ **kwargs, 
-                res: str(kwargs.get(res)),
-                args: str(kwargs.get(args)),
-                kwargs: str(kwargs.get(kwargs)),
-                err: str(e.args),
-            }))
-        print('error: {}\nargs: {}'.format(e, kwargs))
+        try:
+            logger(json.dumps({ **kwargs, 
+                    'res': str(kwargs.get('res')),
+                    'args': str(kwargs.get('args')),
+                    'kwargs': str(kwargs.get('kwargs')),
+                    'err': str(e.args),
+                }))
+        except Exception as e:
+            logger(json.dumps({'args': str(kwargs), 'error': str(e.args)}))
+            print({**kwargs, 'logging_error': e})
     except Exception as e:
         logger(json.dumps({'args': str(kwargs), 'error': str(e.args)}))
         print({**kwargs, 'logging_error': e})
-    return log
+    return x
 
-def track(func: Callable, frequency: Union[int, Callable]=0, **logger: Dict) -> Callable:
+def track(func: Callable=missing, frequency: Union[int, Callable]=0, **log_opts: Dict) -> Callable:
     '''This function wraps any function and logs metrics on the function
         func: the funcion being tracked
         frequency: an integer for sampling frequency (1/frequency) or a function which returns a boolean
             such that frequency(func(*args **kwargs)) -> bool
             A `False` or falsy value will only log on error
     '''
+    if func is missing: return functools.partial(track, frequency=frequency, **log_opts)
     @functools.wraps(func)
     def f(*args, **kwargs):
         try:
@@ -60,14 +69,26 @@ def track(func: Callable, frequency: Union[int, Callable]=0, **logger: Dict) -> 
             if frequency:
                 if callable(frequency):
                     if frequency(res):
-                        log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **logger)
+                        log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **log_opts)
                 elif random.randint(1, frequency) == 1:
-                    log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **logger)
+                    log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **log_opts)
         except Exception as e:
             try:
-                log(func=func.__name__, args=args, kwargs=kwargs, error=e.args, **logger)
+                log(func=func.__name__, args=args, kwargs=kwargs, error=e.args, **log_opts)
             except:
-                pass
+                last_resource_logger(func=func.__name__, args=args, kwargs=kwargs, error=e.args, **log_opts)
             raise e
         return res
     return f
+
+def last_resource_logger(*args, **kwargs):
+    for i, x in enumerate(args):
+        try:
+            print({'last_resource_logger: arg[{}]:'.format(i): x})
+        except:
+            print('last_resource_logger: could not log arg[{}]'.format(i))
+    for k, v in kwargs.items():
+        try:
+            print('last_resource_logger:', {k: v})
+        except:
+            print('last_resource_logger: could not log kwargs: {}'.format(k))
