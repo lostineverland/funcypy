@@ -3,7 +3,9 @@
 import functools
 import random
 import json
+import traceback
 import time, datetime
+from datetime import datetime
 from typing import Callable, Any, Dict, Union
 from . times import epoch_to_iso
 from . seqs import is_lazy
@@ -26,6 +28,14 @@ def json_serializer(obj: object) -> Callable:
     if hasattr(obj, 'to_dict'):
         return obj.to_dict()
     
+    if isinstance(obj, Exception):
+        return {
+            'type': type(obj).__name__,
+            'message': str(obj),
+            'args': obj.args,
+            'traceback': ''.join(traceback.format_exception(None, obj, obj.__traceback__)),
+        }
+
     raise TypeError('Type {} not serializable'.format(str(type(obj))))
 
 def log(x=None, name='value', logger=print, **kwargs) -> Any:
