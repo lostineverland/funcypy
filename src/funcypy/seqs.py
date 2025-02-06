@@ -1,6 +1,6 @@
 'tools to handle lazy objects (sequences)'
 
-import functools
+import functools, itertools
 from typing import Generator, Iterable, Iterator, List, Tuple, Any, Union
 from collections.abc import Iterable as IterableType
 missing = object()
@@ -58,9 +58,7 @@ def last(seq: Iterable) -> Union[Any, None]:
 
 def concat(*seqs: Tuple[Iterable]) -> Iterable:
     'concatenate sequences'
-    for seq in seqs:
-        for i in seq:
-            yield i
+    return itertools.chain(*seqs)
 
 def iterator(seq: Iterable) -> Generator:
     '''An iterator which allows a "rewind" in the form of value re-insertion
