@@ -1,8 +1,10 @@
 'Test monitor module'
 
 import pytest
-import json
+import json, datetime
+from funcypy import monitor
 from funcypy.funcy import pipe, rcomp, partial
+from funcypy import times
 
 @partial
 def add(x, y):
@@ -41,3 +43,26 @@ def test_track_pipe(capsys):
     pipe(2, add(3), pow(2), monitor=dict(frequency=lambda x: x == 25, namespace='some'))
     std = capsys.readouterr()
     assert json.loads(std.out)['namespace'] == 'some'
+
+def test_json_serializer():
+    assert json.loads(json.dumps(
+        Exception('some error', 'some arg'),
+        default=monitor.json_serializer
+    )) == {
+        "type": "Exception",
+        "message": "('some error', 'some arg')",
+        "args":
+        [
+            "some error",
+            "some arg"
+        ],
+        "traceback": "Exception: ('some error', 'some arg')\n"}
+    assert json.dumps(
+            set([1, 2]),
+            default=monitor.json_serializer,
+        ) == '"{}"'.format(str({1, 2}))
+    dt = datetime.datetime.now()
+    assert json.dumps(
+            dt,
+            default=monitor.json_serializer,
+        ) == '"{}"'.format(times.epoch_to_iso(dt.timestamp()))
