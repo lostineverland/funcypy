@@ -30,7 +30,7 @@ def json_serializer(obj: object) -> Callable:
             'type': type(obj).__name__,
             'message': str(obj),
             'args': obj.args,
-            'traceback': ''.join(traceback.format_exception(None, obj, obj.__traceback__)),
+            'traceback': traceback.format_exception(None, obj, obj.__traceback__),
         }
     
     if is_lazy(obj):

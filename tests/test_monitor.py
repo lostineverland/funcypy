@@ -56,7 +56,7 @@ def test_json_serializer():
             "some error",
             "some arg"
         ],
-        "traceback": "Exception: ('some error', 'some arg')\n"}
+        "traceback": ["Exception: ('some error', 'some arg')\n"]}
     assert json.dumps(
             set([1, 2]),
             default=monitor.json_serializer,
