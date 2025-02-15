@@ -19,9 +19,6 @@ def json_serializer(obj: object) -> Callable:
     if isinstance(obj, datetime):
         return epoch_to_iso(obj.timestamp())
     
-    if is_lazy(obj):
-        return str(obj)
-    
     if hasattr(obj, 'to_json'):
         return obj.to_json()
     
@@ -35,6 +32,9 @@ def json_serializer(obj: object) -> Callable:
             'args': obj.args,
             'traceback': ''.join(traceback.format_exception(None, obj, obj.__traceback__)),
         }
+    
+    if is_lazy(obj):
+        return str(obj)
 
     raise TypeError('Type {} not serializable'.format(str(type(obj))))
 
