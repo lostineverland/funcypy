@@ -2,6 +2,8 @@
 
 - [ ] [task-001](issues/task-001.md): a module for transducer-like operations
 - [ ] [task-002](issues/task-002.md): monitor tools
+- [ ] monitor/json_serializer should handle [namedtuples]
+  - I may want to have a module for handling types
 
 # GPT
 
@@ -10,3 +12,4 @@
 - [Iterator vs Generator](./GPT_logs/2024/2024-11/2024-11-18-py-iterator-vs-generator.md)
 - [Exception Logging](./GPT_logs/2024/2024-11/2024-11-18-py-iterator-vs-generator.md)
 - [Exception Logging](./GPT_logs/2025/2025-02/2025-02-05-py-exception-logging.md)
+- [namedtuples](GPT_logs/2025/2025-03/2025-03-10-namedtuple-serialization.md)
