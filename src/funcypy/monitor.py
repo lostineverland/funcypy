@@ -25,6 +25,9 @@ def json_serializer(obj: object) -> Callable:
     if hasattr(obj, 'to_dict'):
         return obj.to_dict()
     
+    if isinstance(obj, tuple) and hasattr(obj, '_fields'):
+        return namedtuple_to_dict(obj)
+
     if isinstance(obj, Exception):
         return {
             'type': type(obj).__name__,
@@ -37,6 +40,14 @@ def json_serializer(obj: object) -> Callable:
         return str(obj)
 
     raise TypeError('Type {} not serializable'.format(str(type(obj))))
+
+def namedtuple_to_dict(obj):
+    if isinstance(obj, tuple) and hasattr(obj, '_fields'):
+        return {field: namedtuple_to_dict(getattr(obj, field)) for field in obj._fields}
+    elif isinstance(obj, list):
+        return [namedtuple_to_dict(item) for item in obj]
+    else:
+        return obj
 
 def log(x=None, name='value', logger=print, **kwargs) -> Any:
     '''A logging function which returns the value (as opposed to print which returns `None`)
