@@ -2,6 +2,7 @@
 
 - [ ] [task-001](issues/task-001.md): a module for transducer-like operations
 - [ ] [task-002](issues/task-002.md): monitor tools
+- [ ] task-003: General Getter
 - [ ] monitor/json_serializer should handle [namedtuples]
   - I may want to have a module for handling types
 
