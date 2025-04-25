@@ -124,6 +124,7 @@ def juxt(*funcs: Callable) -> Callable:
     return lambda *i: [f(*i) for f in funcs]
 
 def pmap(func: Union[Callable, Iterable[Callable]], monitor: Union[bool, Dict]=True) -> Callable:
+    "A partialed map (a curried map function)"
     if is_iterable(func):
         return functools.partial(map, rcomp(*func, monitor=monitor))
     if monitor:
