@@ -11,6 +11,9 @@ def add(x, y):
 def pow(y, x):
     return x ** y
 
+def test_partial():
+    assert add(2, 3) == 5
+
 def test_rcomp_complement():
     assert rcomp(add(3), pow(2))(2) == 25
     assert complement(rcomp(add(3), pow(2)))(2) == False
