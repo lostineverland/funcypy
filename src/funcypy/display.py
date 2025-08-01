@@ -1,5 +1,6 @@
 'A collection of tools for displaying or pretty printing'
 
+from numbers import Number
 from . funcy import partial
 from . import monitor
 
@@ -22,8 +23,10 @@ def apply_format(val, fmt, num_fmt='{:,.7g}', str_fmt='{}'):
         return s
     elif isinstance(val, str):
         return str_fmt.format(val)
-    else:
+    elif isinstance(val, Number):
         return num_fmt.format(val)
+    else:
+        return '{}'.format(val)
 
 @track
 def table(rows, headers=None, rename={}, fmt={}, num_fmt='{:,.7g}', str_fmt='{}'):
