@@ -31,10 +31,11 @@ def rcomp(*funcs: Callable, monitor: Union[bool, Dict]=True) -> Callable:
         or with a frequency keyword (int or function) for random sampling
     '''
     if monitor:
+        i_funcs = list(enumerate(funcs))
         if isinstance(monitor, dict):
             opts = {'frequency': 1, **monitor}
-            return lambda y: functools.reduce(lambda x, f: track(f, **opts)(x), funcs, y)
-        return lambda y: functools.reduce(lambda x, f: track(f, frequency=0)(x), funcs, y)
+            return lambda y: functools.reduce(lambda x, i_f: track(i_f[1], i_func=i_f[0], **opts)(x), i_funcs, y)
+        return lambda y: functools.reduce(lambda x, i_f: track(i_f[1], i_func=i_f[0], frequency=0)(x), i_funcs, y)
     return lambda y: functools.reduce(lambda x, f: f(x), funcs, y)
 
 def partial(func: Callable=missing, count: int=1) -> Callable:
@@ -61,10 +62,11 @@ def pipe(*args: Tuple[Any, Callable], monitor: Union[bool, Dict]=True) -> Any:
     y = args[0]
     funcs = args[1:]
     if monitor:
+        i_funcs = list(enumerate(funcs))
         if isinstance(monitor, dict):
             opts = {'frequency': 1, **monitor}
-            return functools.reduce(lambda x, f: track(f, **opts)(x), funcs, y)
-        return functools.reduce(lambda x, f: track(f, frequency=0)(x), funcs, y)
+            return functools.reduce(lambda x, i_f: track(i_f[1], i_func=i_f[0], **opts)(x), i_funcs, y)
+        return functools.reduce(lambda x, i_f: track(i_f[1], i_func=i_f[0], frequency=0)(x), i_funcs, y)
     return functools.reduce(lambda x, f: f(x), funcs, y)
 
 def once(func: Callable) -> Callable:
