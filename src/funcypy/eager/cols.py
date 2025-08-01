@@ -51,6 +51,15 @@ def field_filter(fields: List[str], obj: dict) -> dict:
 
 @partial
 def pluck(fields: Union[str, List[str]], item: Union[dict, List[dict]]) -> Union[Any, List[Any]]:
+    '''return the values (and only the values) in a dict which match the given fields
+         this version also handles a list of dictionaries
+        pluck('x', [{'x': 0, 'y': 0}, {'x': 1, 'y': 1}, {'x': 2, 'y': 4}])
+        => [0, 1, 2]
+        pluck(['x', 'y'])({'x': 2, 'y': 4})
+        => [2, 4]
+        pluck(['x', 'y'])([{'x': 0, 'y': 0}, {'x': 1, 'y': 1}, {'x': 2, 'y': 4}])
+        => [[0, 0], [1, 1], [2, 4]]
+    '''
     if isinstance(fields, str):
         op = next
     elif isinstance(fields, Iterable):

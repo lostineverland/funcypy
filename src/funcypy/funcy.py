@@ -91,6 +91,7 @@ def superset(*items: Tuple) -> Callable:
         superset('some', 1, 'me')(1, me) == True
         superset('some', 1, 'me')('some', 'other') == False
     """
+    assert not any(isinstance(i, (list, dict, tuple, set)) for i in items), "Iterable (list?, dict?) is nested in items"
     return lambda *i: set(items).issuperset(i)
 
 has = superset
