@@ -1,7 +1,7 @@
 'Operating on collections'
 
 import functools
-from typing import Callable, Generator, Tuple, Iterable, Iterator, Any, Union
+from typing import Callable, Generator, Tuple, List, Iterable, Iterator, Any, Union
 from . funcy import complement, has, partial
 from . seqs import concat, iterator
 
@@ -32,11 +32,13 @@ def itemmap(oper: Callable, mseq: HashCol) -> Generator:
         yield oper(k, v)
 
 @partial
-def keyfilter(oper: Union[Callable, str], mseq: HashCol) -> Generator:
+def keyfilter(oper: Union[Callable, str, List[str]], mseq: HashCol) -> Generator:
     'Perform a filter operation over the keys of a dict'
     if isinstance(mseq, dict): mseq = mseq.items()
     if isinstance(oper, str):
         op = lambda x: x == oper
+    elif isinstance(oper, list):
+        op = has(*oper)
     else:
         op = oper
     for k, v in mseq:
@@ -50,10 +52,12 @@ def valfilter(oper: Callable, mseq: HashCol) -> Generator:
         if oper(v): yield k, v
 
 @partial
-def removekey(oper: Union[Callable, str], mseq: HashCol) -> Generator:
+def removekey(oper: Union[Callable, str, List[str]], mseq: HashCol) -> Generator:
     'Perform a remove operation over the keys of a dict'
     if isinstance(oper, str):
         op = lambda x: x == oper
+    elif isinstance(oper, list):
+        op = has(*oper)
     else:
         op = oper
     return keyfilter(complement(op), mseq)
@@ -68,12 +72,9 @@ def removevalnone(mseq: HashCol) -> Generator:
     return valfilter(lambda x: x is not None, mseq)
 
 @partial
-def field_filter(fields: Tuple, mseq: HashCol) -> Generator:
+def field_filter(fields: List[str], mseq: HashCol) -> Generator:
     'apply a white list filter (fields) to the dict keys'
-    return keyfilter(
-        has(*fields),
-        mseq
-    )
+    return keyfilter(fields, mseq)
 
 def flatten(mseq: HashCol, _name_space: str="", depth: int=-1, follow_list: bool=False, all_possible_keys=False) -> Generator:
     """Takes a nested dict and flattens the values such that:

@@ -19,7 +19,7 @@ def itemmap(oper: Callable, obj: dict) -> dict:
     return dict(cols.itemmap(oper, obj))
 
 @partial
-def keyfilter(oper: Union[Callable, str], obj: dict) -> dict:
+def keyfilter(oper: Union[Callable, str, List[str]], obj: dict) -> dict:
     return dict(cols.keyfilter(oper, obj))
 
 @partial
@@ -27,7 +27,7 @@ def valfilter(oper: Callable, obj: dict) -> dict:
     return dict(cols.valfilter(oper, obj))
 
 @partial
-def removekey(oper: Union[Callable, str], obj: dict) -> dict:
+def removekey(oper: Union[Callable, str, List[str]], obj: dict) -> dict:
     return dict(cols.removekey(oper, obj))
 
 @partial

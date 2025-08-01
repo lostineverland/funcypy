@@ -26,6 +26,8 @@ def test_keyfilter(data):
     assert cols.keyfilter('some', data) == dict(some=1)
     assert cols.keyfilter(is_some, data) == dict(some=1)
     assert cols.keyfilter(is_some)(data) == dict(some=1)
+    sample = dict(some=1, me=2, on=3, what=4)
+    assert list(map(cols.keyfilter(['some', 'me', 'for']), 3 * [sample])) == 3 * [data]
 
 def test_valfilter(data):
     is_odd = lambda x: x % 2
@@ -37,6 +39,8 @@ def test_removekey(data):
     assert cols.removekey('me', data) == dict(some=1)
     assert cols.removekey(is_me, data) == dict(some=1)
     assert cols.removekey(is_me)(data) == dict(some=1)
+    sample = dict(some=1, me=2, on=3, what=4)
+    assert list(map(cols.removekey(['on', 'what']), 3 * [sample])) == 3 * [data]
 
 def test_removeval(data):
     is_even = lambda x: x % 2 == 0
