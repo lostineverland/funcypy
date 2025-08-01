@@ -50,6 +50,7 @@ def partial(func: Callable=missing, count: int=1) -> Callable:
     def f(*args, **kwargs):
         if sum([len(args), len(kwargs)]) > count:
             return func(*args, **kwargs)
+        print('not ready to run', func)
         return functools.update_wrapper(functools.partial(func, *args, **kwargs), func)
     return f
 
@@ -136,5 +137,19 @@ def pmap(func: Union[Callable, Iterable[Callable]], monitor: Union[bool, Dict]=T
     return functools.partial(map, func)
 
 def cmap(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
-    "A composable (rcomp) function applied to a partialed (curried) map"
-    return functools.partial(map, rcomp(*func, monitor=monitor))
+    "A curried and composable (rcomp) map function"
+    return functools.update_wrapper(
+        functools.partial(map, rcomp(*func, monitor=monitor)),
+        cmap)
+
+def cfilter(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
+    "A curried and composable (rcomp) filter function"
+    return functools.update_wrapper(
+        functools.partial(filter, rcomp(*func, monitor=monitor)),
+        cfilter)
+
+def cremove(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
+    "A curried and composable (rcomp) filter function"
+    return functools.update_wrapper(
+        functools.partial(filter, complement(rcomp(*func, monitor=monitor))),
+        cremove)

@@ -10,13 +10,6 @@ HashCol = Union[dict, Iterable[Tuple[str, Any]]]
 # These are for the list of dicts
 HashItems = Iterable[HashCol]
 
-filter = partial(filter)
-
-@partial
-def remove(oper: Callable, items: Iterable) -> Generator:
-    'Perform a remove operation over the items of an iterable'
-    return filter(complement(oper), items)
-
 @partial
 def keymap(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a map operation over the keys of a dict'

@@ -73,7 +73,7 @@ def log(x=None, name='value', logger=print, **kwargs) -> Any:
         print({**kwargs, 'logging_error': e})
     return x
 
-def track(func: Callable=missing, frequency: Union[int, Callable]=0, func_parent=None, arg_history={}, **log_opts: Dict) -> Callable:
+def track(func: Callable=missing, frequency: Union[int, Callable]=0, arg_history={}, **log_opts: Dict) -> Callable:
     '''This function wraps any function and logs metrics on the function
         func: the funcion being tracked
         frequency: an integer for sampling frequency (1/frequency) or a function which returns a boolean
@@ -84,39 +84,38 @@ def track(func: Callable=missing, frequency: Union[int, Callable]=0, func_parent
         return functools.partial(
             track,
             frequency=frequency,
-            func_parent=func_parent,
             arg_history=arg_history,
             **log_opts)
-    if func_parent:
-        use_func_meta = func_parent
-    else:
-        use_func_meta = func
-    @functools.wraps(use_func_meta)
+    @functools.wraps(func)
     def f(*args0, **kwargs0):
+        if hasattr(func, '__name__'):
+            func_name = func.__name__
+        else:
+            func_name = repr(func)
         try:
             args = arg_history.get('args', []) + list(args0)
             kwargs = {**arg_history.get('kwargs', {}), **kwargs0}
             t0 = time.time()
             res = func(*args0, **kwargs0)
             t1 = time.time()
+            print('callable is not seen')
             if callable(res):
                 return track(
-                    res,
+                    functools.update_wrapper(res, func),
                     frequency=frequency,
-                    func_parent=func_parent,
                     arg_history=dict(args=args, kwargs=kwargs),
                     **log_opts)
             if frequency:
                 if callable(frequency):
                     if frequency(res):
-                        log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **log_opts)
+                        log(func=func_name, res=res, args=args, kwargs=kwargs, duration=t1-t0, **log_opts)
                 elif random.randint(1, frequency) == 1:
-                    log(func=func.__name__, res=res, args=args, kwargs=kwargs, duration=t1-t0, **log_opts)
+                    log(func=func_name, res=res, args=args, kwargs=kwargs, duration=t1-t0, **log_opts)
         except Exception as e:
             try:
-                log(func=func.__name__, args=args, kwargs=kwargs, error=e.args, **log_opts)
+                log(func=func_name, args=args, kwargs=kwargs, error=e.args, **log_opts)
             except:
-                last_resource_logger(func=func.__name__, args=args, kwargs=kwargs, error=e.args, **log_opts)
+                last_resource_logger(func=func, args=args, kwargs=kwargs, error=e.args, **log_opts)
             raise e
         return res
     return f
