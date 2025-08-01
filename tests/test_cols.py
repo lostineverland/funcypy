@@ -7,6 +7,14 @@ from funcypy.eager import cols
 def data():
     return dict(some=1, me=2)
 
+odd = lambda i: i % 2
+
+def test_filter():
+    assert cols.filter(odd, range(5)) == [1, 3]
+
+def test_remove():
+    assert cols.remove(odd, range(5)) == [0, 2, 4]
+
 def test_keymap(data):
     assert cols.keymap(str.upper, data) == dict(SOME=1, ME=2)
     assert cols.keymap(str.upper)(data) == dict(SOME=1, ME=2)

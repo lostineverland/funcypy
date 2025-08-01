@@ -1,10 +1,18 @@
 'Operating on collections'
 
 import functools
-from typing import Callable, List, Union
+from typing import Callable, List, Union, Iterable
 from .. import cols
 from .. funcy import partial
 
+
+@partial
+def filter(oper: Callable, obj: Iterable) -> list:
+    return list(cols.filter(oper, obj))
+
+@partial
+def remove(oper: Callable, obj: Iterable) -> list:
+    return list(cols.remove(oper, obj))
 
 @partial
 def keymap(oper: Callable, obj: dict) -> dict:
