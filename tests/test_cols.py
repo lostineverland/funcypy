@@ -23,6 +23,7 @@ def test_itemmap(data):
 
 def test_keyfilter(data):
     is_some = lambda x: x == 'some'
+    assert cols.keyfilter('some', data) == dict(some=1)
     assert cols.keyfilter(is_some, data) == dict(some=1)
     assert cols.keyfilter(is_some)(data) == dict(some=1)
 
@@ -33,6 +34,7 @@ def test_valfilter(data):
 
 def test_removekey(data):
     is_me = lambda x: x == 'me'
+    assert cols.removekey('me', data) == dict(some=1)
     assert cols.removekey(is_me, data) == dict(some=1)
     assert cols.removekey(is_me)(data) == dict(some=1)
 

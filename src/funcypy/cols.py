@@ -32,11 +32,15 @@ def itemmap(oper: Callable, mseq: HashCol) -> Generator:
         yield oper(k, v)
 
 @partial
-def keyfilter(oper: Callable, mseq: HashCol) -> Generator:
+def keyfilter(oper: Union[Callable, str], mseq: HashCol) -> Generator:
     'Perform a filter operation over the keys of a dict'
     if isinstance(mseq, dict): mseq = mseq.items()
+    if isinstance(oper, str):
+        op = lambda x: x == oper
+    else:
+        op = oper
     for k, v in mseq:
-        if oper(k): yield k, v
+        if op(k): yield k, v
 
 @partial
 def valfilter(oper: Callable, mseq: HashCol) -> Generator:
@@ -46,9 +50,13 @@ def valfilter(oper: Callable, mseq: HashCol) -> Generator:
         if oper(v): yield k, v
 
 @partial
-def removekey(oper: Callable, mseq: HashCol) -> Generator:
+def removekey(oper: Union[Callable, str], mseq: HashCol) -> Generator:
     'Perform a remove operation over the keys of a dict'
-    return keyfilter(complement(oper), mseq)
+    if isinstance(oper, str):
+        op = lambda x: x == oper
+    else:
+        op = oper
+    return keyfilter(complement(op), mseq)
 
 @partial
 def removeval(oper: Callable, mseq: HashCol) -> Generator:
