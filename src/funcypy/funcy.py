@@ -136,3 +136,7 @@ def pmap(func: Union[Callable, Iterable[Callable]], monitor: Union[bool, Dict]=T
             return functools.partial(map, track(func, **opts))
         return functools.partial(map, track(func, frequency=0))
     return functools.partial(map, func)
+
+def cmap(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
+    "A composable (rcomp) function applied to a partialed (curried) map"
+    return functools.partial(map, rcomp(*func, monitor=monitor))

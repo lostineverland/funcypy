@@ -43,3 +43,7 @@ def test_juxt():
 def test_pmap():
     assert list(pmap(add(3))(range(5))) == list(map(add(3), range(5)))
     assert list(pmap([add(3), add(1)])(range(5))) == list(map(add(4), range(5)))
+
+def test_cmap():
+    assert list(cmap(add(3))(range(5))) == list(map(add(3), range(5)))
+    assert list(cmap(add(3), add(1))(range(5))) == list(map(add(4), range(5)))
