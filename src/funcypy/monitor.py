@@ -63,13 +63,13 @@ def log(x=None, name='value', logger=print, **kwargs) -> Any:
                     'res': str(kwargs.get('res')),
                     'args': str(kwargs.get('args')),
                     'kwargs': str(kwargs.get('kwargs')),
-                    'err': str(e.args),
+                    'log_err': {'level 1':str(e.args)},
                 }))
         except Exception as e:
-            logger(json.dumps({'args': str(kwargs), 'error': str(e.args)}))
+            logger(json.dumps({'args': str(kwargs), 'log_err': {'level 2': str(e.args)}}))
             print({**kwargs, 'logging_error': e})
     except Exception as e:
-        logger(json.dumps({'args': str(kwargs), 'error': str(e.args)}))
+        logger(json.dumps({'args': str(kwargs), 'log_err': {'level 3': str(e.args)}}))
         print({**kwargs, 'logging_error': e})
     return x
 
@@ -99,12 +99,13 @@ def track(func: Callable=missing, frequency: Union[int, Callable]=0, arg_history
             res = func(*args0, **kwargs0)
             t1 = time.time()
             print('callable is not seen')
-            if callable(res):
-                return track(
-                    functools.update_wrapper(res, func),
-                    frequency=frequency,
-                    arg_history=dict(args=args, kwargs=kwargs),
-                    **log_opts)
+            # if callable(res):
+            #     print('callable was seen')
+            #     return track(
+            #         functools.update_wrapper(res, func),
+            #         frequency=frequency,
+            #         arg_history=dict(args=args, kwargs=kwargs),
+            #         **log_opts)
             if frequency:
                 if callable(frequency):
                     if frequency(res):
