@@ -73,20 +73,39 @@ def log(x=None, name='value', logger=print, **kwargs) -> Any:
         print({**kwargs, 'logging_error': e})
     return x
 
-def track(func: Callable=missing, frequency: Union[int, Callable]=0, **log_opts: Dict) -> Callable:
+def track(func: Callable=missing, frequency: Union[int, Callable]=0, func_parent=None, arg_history={}, **log_opts: Dict) -> Callable:
     '''This function wraps any function and logs metrics on the function
         func: the funcion being tracked
         frequency: an integer for sampling frequency (1/frequency) or a function which returns a boolean
             such that frequency(func(*args **kwargs)) -> bool
             A `False` or falsy value will only log on error
     '''
-    if func is missing: return functools.partial(track, frequency=frequency, **log_opts)
-    @functools.wraps(func)
-    def f(*args, **kwargs):
+    if func is missing:
+        return functools.partial(
+            track,
+            frequency=frequency,
+            func_parent=func_parent,
+            arg_history=arg_history,
+            **log_opts)
+    if func_parent:
+        use_func_meta = func_parent
+    else:
+        use_func_meta = func
+    @functools.wraps(use_func_meta)
+    def f(*args0, **kwargs0):
         try:
+            args = arg_history.get('args', []) + list(args0)
+            kwargs = {**arg_history.get('kwargs', {}), **kwargs0}
             t0 = time.time()
-            res = func(*args, **kwargs)
+            res = func(*args0, **kwargs0)
             t1 = time.time()
+            if callable(res):
+                return track(
+                    res,
+                    frequency=frequency,
+                    func_parent=func_parent,
+                    arg_history=dict(args=args, kwargs=kwargs),
+                    **log_opts)
             if frequency:
                 if callable(frequency):
                     if frequency(res):
