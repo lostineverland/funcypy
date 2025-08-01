@@ -1,7 +1,7 @@
 'Operating on collections'
 
 import functools
-from typing import Callable, List, Union, Iterable
+from typing import Callable, List, Union, Iterable, Any
 from .. import cols
 from .. funcy import partial
 
@@ -46,8 +46,19 @@ def removevalnone(obj: dict) -> dict:
     return dict(cols.removevalnone(obj))
 
 @partial
-def field_filter(fields: List[str], obj: dict):
+def field_filter(fields: List[str], obj: dict) -> dict:
     return dict(cols.field_filter(fields, obj))
+
+@partial
+def pluck(fields: Union[str, List[str]], item: Union[dict, List[dict]]) -> Union[Any, List[Any]]:
+    if isinstance(fields, str):
+        op = next
+    elif isinstance(fields, Iterable):
+        op = list
+    if isinstance(item, dict):
+        return op(cols.pluck(fields, item))
+    elif isinstance(item, Iterable):
+        return [op(cols.pluck(fields, i)) for i in item]
 
 def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
     return dict(cols.flatten(obj, _name_space=_name_space, depth=depth, follow_list=follow_list))

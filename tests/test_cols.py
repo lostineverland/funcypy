@@ -74,3 +74,9 @@ def test_nestten():
     resp = {"some": {"nested": {"value1": 1, "value2": [{"more":{"nesting": 3}}, {"value4": 4}]}, "other": 3}}
     assert dict(cols.nestten(cols.flatten(resp, follow_list=True))) == resp
     assert cols.nestten(data) == resp
+
+def test_pluck():
+    points = [{'x': i, 'y0': i**2 , 'y1': i**3} for i in range(3)]
+    assert cols.pluck('y1', points) == [i**3 for i in range(3)]
+    assert cols.pluck(['x', 'y0'])(points) == [[i, i**2] for i in range(3)]
+    assert cols.pluck(['x', 'y0'])(points[2]) == [[i, i**2] for i in range(3)][2]

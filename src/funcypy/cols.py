@@ -83,6 +83,12 @@ def field_filter(fields: List[str], mseq: HashCol) -> Generator:
     'apply a white list filter (fields) to the dict keys'
     return keyfilter(fields, mseq)
 
+@partial
+def pluck(fields: List[str], mseq: HashCol) -> Generator:
+    'return the values (and only the values) in a dict which match the given fields'
+    for k, v in keyfilter(fields, mseq):
+        yield v
+
 def flatten(mseq: HashCol, _name_space: str="", depth: int=-1, follow_list: bool=False, all_possible_keys=False) -> Generator:
     """Takes a nested dict and flattens the values such that:
     {
