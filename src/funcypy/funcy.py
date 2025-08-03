@@ -50,7 +50,6 @@ def partial(func: Callable=missing, count: int=1) -> Callable:
     def f(*args, **kwargs):
         if sum([len(args), len(kwargs)]) > count:
             return func(*args, **kwargs)
-        print('not ready to run', func)
         return functools.update_wrapper(functools.partial(func, *args, **kwargs), func)
     return f
 

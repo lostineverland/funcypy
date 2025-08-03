@@ -98,14 +98,14 @@ def track(func: Callable=missing, frequency: Union[int, Callable]=0, arg_history
             t0 = time.time()
             res = func(*args0, **kwargs0)
             t1 = time.time()
-            print('callable is not seen')
-            # if callable(res):
-            #     print('callable was seen')
-            #     return track(
-            #         functools.update_wrapper(res, func),
-            #         frequency=frequency,
-            #         arg_history=dict(args=args, kwargs=kwargs),
-            #         **log_opts)
+            # print('callable is not seen')
+            if callable(res):
+                # print('callable was seen')
+                return track(
+                    functools.update_wrapper(res, func),
+                    frequency=frequency,
+                    arg_history=dict(args=args, kwargs=kwargs),
+                    **log_opts)
             if frequency:
                 if callable(frequency):
                     if frequency(res):
