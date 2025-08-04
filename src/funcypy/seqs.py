@@ -56,14 +56,14 @@ def last(seq: Iterable) -> Union[Any, None]:
         val = i
     return val
 
-def concat(*seqs: Tuple[Iterable]) -> Generator:
+def concat(*seq: Tuple[Iterable]) -> Generator:
     'concatenate sequences'
-    for seq in seqs:
-        if isinstance(seq, Iterable):
-            for i in seq:
+    for col in seq:
+        if isinstance(col, Iterable):
+            for i in col:
                 yield i
         else:
-            yield seq
+            yield col
 
 def iterator(seq: Iterable) -> Generator:
     '''An iterator which allows a "rewind" in the form of value re-insertion

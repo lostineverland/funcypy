@@ -80,3 +80,4 @@ def test_pluck():
     assert cols.pluck('y1', points) == [i**3 for i in range(3)]
     assert cols.pluck(['x', 'y0'])(points) == [[i, i**2] for i in range(3)]
     assert cols.pluck(['x', 'y0'])(points[2]) == [[i, i**2] for i in range(3)][2]
+

@@ -2,6 +2,7 @@
 
 import pytest
 from funcypy import seqs
+from funcypy.eager import seqs as eseqs
 
 @pytest.fixture()
 def data():
@@ -58,3 +59,9 @@ def test_iterator(data):
     assert next(ii) == -3
     assert next(ii) == 1
     assert list(ii) == list(range(2, 10))
+
+def test_concat():
+    assert eseqs.concat()(3) == [3]
+    assert eseqs.concat(3, 4) == [3, 4]
+    assert eseqs.concat([3, 4], [5, 6]) == [3, 4, 5, 6]
+    assert eseqs.concat(3, 4, [5, 6]) == [3, 4, 5, 6]

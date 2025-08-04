@@ -4,6 +4,7 @@ import functools
 from typing import Callable, List, Union, Iterable, Any
 from .. import cols
 from .. funcy import partial
+from .. import seqs
 
 
 @partial
