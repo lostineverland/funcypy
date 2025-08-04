@@ -3,7 +3,8 @@
 import functools
 from typing import Callable, Any, Dict, Union
 from funcypy import funcy, monitor
-from funcypy.eager import cols
+from funcypy.seqs import concat
+from funcypy.eager import cols, seqs
 
 print('---'*20)
 
@@ -15,14 +16,26 @@ def add(a, b):
 @funcy.partial
 @monitor.track(frequency=1)
 def mul(a, b):
-  return a + b
+  return a * b
 
 add3 = add(3)
 mul2 = mul(2)
 
-add3(5)
-mul2(5)
+# These behave as expected
+# add3(5)
+# mul2(5)
+# add3('5')
+# mul2('5')
 
-# both of these work as expected
-add3('5')
-mul2('5')
+# print(list(concat([2])))
+
+funcy.pipe(10,
+    mul(3),
+    add(5),
+    # seqs.concat(range(4)),
+    # seqs.concat(),
+    # {2, 35}.issuperset,
+    funcy.has(35, 36),
+    monitor={'frequency': 1}
+    )
+
