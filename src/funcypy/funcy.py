@@ -3,7 +3,7 @@
 import functools
 import json
 from typing import Any, Callable, Tuple, Dict, Union, Iterable
-from funcypy.seqs import is_iterable
+from funcypy.seqs import is_iterable, concat
 from funcypy.monitor import track
 missing = object()
 
@@ -92,7 +92,16 @@ def superset(*items: Tuple) -> Callable:
         superset('some', 1, 'me')('some', 'other') == False
     """
     # assert not any(isinstance(i, (list, dict, tuple, set)) for i in items), "Iterable (list?, dict?) is nested in items"
-    return lambda *i: set(items).issuperset(i)
+    if len(items) == 1 and not isinstance(items[0], str):
+        items = list(concat(*items))
+    else:
+        items = list(concat(items))
+    def f(*args):
+        if len(args) == 1 and not isinstance(args[0], str):
+            return set(items).issuperset(list(concat(args)))
+        else:
+            return set(items).issuperset(args)
+    return f
 
 has = superset
 contains = superset
