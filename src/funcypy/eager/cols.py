@@ -6,6 +6,7 @@ from .. import cols
 from .. funcy import partial
 from .. import seqs
 
+stdlib_filter = filter
 
 @partial
 def filter(oper: Callable, obj: Iterable) -> list:
@@ -62,13 +63,14 @@ def pluck(fields: Union[str, List[str]], item: Union[dict, List[dict]]) -> Union
         => [[0, 0], [1, 1], [2, 4]]
     '''
     if isinstance(fields, str):
-        op = next
+        op = lambda x: next(x, None)
     elif isinstance(fields, Iterable):
         op = list
     if isinstance(item, dict):
         return op(cols.pluck(fields, item))
     elif isinstance(item, Iterable):
-        return [op(cols.pluck(fields, i)) for i in item]
+        return list(stdlib_filter(cols.notNone, [op(cols.pluck(fields, i)) for i in item]))
+
 
 def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
     return dict(cols.flatten(obj, _name_space=_name_space, depth=depth, follow_list=follow_list))

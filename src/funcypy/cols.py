@@ -10,6 +10,9 @@ HashCol = Union[dict, Iterable[Tuple[str, Any]]]
 # These are for the list of dicts
 HashItems = Iterable[HashCol]
 
+isNone = lambda x: x == None
+notNone = lambda x: x != None
+
 @partial
 def keymap(oper: Callable, mseq: HashCol) -> Generator:
     'Perform a map operation over the keys of a dict'

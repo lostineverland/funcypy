@@ -32,6 +32,7 @@ def test_itemmap(data):
 def test_keyfilter(data):
     is_some = lambda x: x == 'some'
     assert cols.keyfilter('some', data) == dict(some=1)
+    assert cols.keyfilter('som', data) == dict()
     assert cols.keyfilter(is_some, data) == dict(some=1)
     assert cols.keyfilter(is_some)(data) == dict(some=1)
     sample = dict(some=1, me=2, on=3, what=4)
@@ -77,6 +78,7 @@ def test_nestten():
 
 def test_pluck():
     points = [{'x': i, 'y0': i**2 , 'y1': i**3} for i in range(3)]
+    assert cols.pluck('y1')(points[0]) == [i**3 for i in range(3)][0]
     assert cols.pluck('y1', points) == [i**3 for i in range(3)]
     assert cols.pluck(['x', 'y0'])(points) == [[i, i**2] for i in range(3)]
     assert cols.pluck(['x', 'y0'])(points[2]) == [[i, i**2] for i in range(3)][2]

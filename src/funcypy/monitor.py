@@ -98,9 +98,7 @@ def track(func: Callable=missing, frequency: Union[int, Callable]=0, arg_history
             t0 = time.time()
             res = func(*args0, **kwargs0)
             t1 = time.time()
-            # print('callable is not seen')
             if callable(res):
-                # print('callable was seen')
                 return track(
                     functools.update_wrapper(res, func),
                     frequency=frequency,
@@ -114,9 +112,9 @@ def track(func: Callable=missing, frequency: Union[int, Callable]=0, arg_history
                     log(func=func_name, res=res, args=args, kwargs=kwargs, duration=t1-t0, **log_opts)
         except Exception as e:
             try:
-                log(func=func_name, args=args, kwargs=kwargs, error=e.args, **log_opts)
+                log(func=func_name, args=args, kwargs=kwargs, error=e, **log_opts)
             except:
-                last_resource_logger(func=func, args=args, kwargs=kwargs, error=e.args, **log_opts)
+                last_resource_logger(func=func, args=args, kwargs=kwargs, error=e, **log_opts)
             raise e
         return res
     return f
