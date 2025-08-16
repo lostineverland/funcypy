@@ -65,8 +65,8 @@ def log(x=None, name='value', logger=print, **kwargs) -> Any:
                     'kwargs': str(kwargs.get('kwargs')),
                     'log_err': {'level 1':str(e.args)},
                 }))
-        except Exception as e:
-            logger(json.dumps({'args': str(kwargs), 'log_err': {'level 2': str(e.args)}}))
+        except Exception as e2:
+            logger(json.dumps({'args': str(kwargs), 'log_err': {'level 2': str(e2.args)}}))
             print({**kwargs, 'logging_error': e})
     except Exception as e:
         logger(json.dumps({'args': str(kwargs), 'log_err': {'level 3': str(e.args)}}))

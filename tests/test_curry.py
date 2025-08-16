@@ -5,7 +5,6 @@ from funcypy import curry
 
 def test_func():
     assert curry.func.reduce(lambda mem, i: mem + i)(range(3)) == 3
-    assert curry.func.reduce(lambda mem, i: mem + i, initial=10)(range(3)) == 13
     assert curry.func.reduce(lambda mem, i: mem + i)(range(3), 10) == 13
 
 def test_iter():

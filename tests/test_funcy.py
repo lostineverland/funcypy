@@ -16,6 +16,7 @@ def test_partial():
 
 def test_rcomp_complement():
     assert rcomp(add(3), pow(2))(2) == 25
+    assert rcomp(rcomp(add(3), add(3)), pow(2))(2) == 64
     assert complement(rcomp(add(3), pow(2)))(2) == False
 
 def test_pipe():
