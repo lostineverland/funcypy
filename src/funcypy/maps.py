@@ -2,9 +2,9 @@
 
 import functools
 from typing import Callable, List, Union, Iterable, Any
-from .. import cols
-from .. funcy import partial
-from .. import seqs
+from funcypy import cols
+from funcypy.funcy import partial
+from funcypy import seqs
 
 stdlib_filter = filter
 

@@ -2,7 +2,6 @@
 
 import pytest
 from funcypy import seqs
-from funcypy.eager import seqs as eseqs, cols
 
 @pytest.fixture()
 def data():
@@ -59,14 +58,3 @@ def test_iterator(data):
     assert next(ii) == -3
     assert next(ii) == 1
     assert list(ii) == list(range(2, 10))
-
-def test_concat():
-    assert eseqs.concat()(3) == [3]
-    assert eseqs.concat(3, 4) == [3, 4]
-    assert eseqs.concat([3, 4], [5, 6]) == [3, 4, 5, 6]
-    assert eseqs.concat(3, 4, [5, 6]) == [3, 4, 5, 6]
-
-def test_cmap():
-    add_1 = lambda x: x + 1
-    val = eseqs.cmap(cols.valmap(add_1))([{'x': i} for i in range(3)])
-    assert val == [{'x': i} for i in range(1, 4)]

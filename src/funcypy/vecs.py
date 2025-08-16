@@ -2,8 +2,8 @@
 
 import functools
 from typing import List, Iterable, Callable, Dict, Union
-from .. funcy import partial, cmap, rcomp
-from .. import seqs
+from funcypy.funcy import partial, cmap, rcomp
+from funcypy import seqs
 
 
 @partial

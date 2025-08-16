@@ -1,7 +1,7 @@
 'Test collection operators module'
 
 import pytest
-from funcypy.eager import cols
+from funcypy import maps as cols
 
 @pytest.fixture()
 def data():
