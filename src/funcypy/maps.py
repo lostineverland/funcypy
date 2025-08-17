@@ -2,9 +2,8 @@
 
 import functools
 from typing import Callable, List, Union, Iterable, Any
-from funcypy import cols
 from funcypy.funcy import partial
-from funcypy import seqs
+from funcypy import cols, seqs
 
 stdlib_filter = filter
 
@@ -51,6 +50,12 @@ def removevalnone(obj: dict) -> dict:
 def field_filter(fields: List[str], obj: dict) -> dict:
     return dict(cols.field_filter(fields, obj))
 
+def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
+    return dict(cols.flatten(obj, _name_space=_name_space, depth=depth, follow_list=follow_list))
+
+def nestten(obj: dict) -> dict:
+    return dict(cols.nestten(obj.items()))
+
 @partial
 def pluck(fields: Union[str, List[str]], item: Union[dict, List[dict]]) -> Union[Any, List[Any]]:
     '''return the values (and only the values) in a dict which match the given fields
@@ -71,9 +76,9 @@ def pluck(fields: Union[str, List[str]], item: Union[dict, List[dict]]) -> Union
     elif isinstance(item, Iterable):
         return list(stdlib_filter(cols.notNone, [op(cols.pluck(fields, i)) for i in item]))
 
-
-def flatten(obj: dict, _name_space: str="", depth: int=-1, follow_list: bool=False) -> dict:
-    return dict(cols.flatten(obj, _name_space=_name_space, depth=depth, follow_list=follow_list))
-
-def nestten(obj: dict) -> dict:
-    return dict(cols.nestten(obj.items()))
+@partial(count=3)
+def reduce(keys: Union[str, List[str]], oper: Callable, items: List[dict], init: dict=None):
+    'A reducer of maps. This, along with pluck, should land in a `records` module'
+    if not isinstance(keys, list): keys = [keys]
+    reducer = lambda mem, i: oper(mem, **keyfilter(keys, {**mem, **i}))
+    return functools.reduce(reducer, items, init)
