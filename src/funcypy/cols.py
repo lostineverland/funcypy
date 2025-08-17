@@ -2,7 +2,8 @@
 
 import functools
 from typing import Callable, Generator, Tuple, List, Iterable, Iterator, Any, Union
-from . funcy import complement, has, partial
+from . funcy import complement, partial
+from . sets import has
 from . seqs import concat, iterator
 
 

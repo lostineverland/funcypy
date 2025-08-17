@@ -10,7 +10,7 @@ def test_concat():
     assert vecs.concat([3, 4], [5, 6]) == [3, 4, 5, 6]
     assert vecs.concat(3, 4, [5, 6]) == [3, 4, 5, 6]
 
-def test_cmap():
+def test_map():
     add_1 = lambda x: x + 1
-    val = vecs.cmap(maps.valmap(add_1))([{'x': i} for i in range(3)])
+    val = vecs.map(maps.valmap(add_1))([{'x': i} for i in range(3)])
     assert val == [{'x': i} for i in range(1, 4)]
