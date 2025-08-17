@@ -98,11 +98,11 @@ def map(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
 def filter(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
     "A curried and composable (rcomp) filter function"
     return functools.update_wrapper(
-        functools.partial(filter, rcomp(*func, monitor=monitor)),
-        cfilter)
+        functools.partial(builtins.filter, rcomp(*func, monitor=monitor)),
+        filter)
 
 def remove(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
     "A curried and composable (rcomp) filter function"
     return functools.update_wrapper(
-        functools.partial(filter, complement(rcomp(*func, monitor=monitor))),
-        cremove)
+        functools.partial(builtins.filter, complement(rcomp(*func, monitor=monitor))),
+        remove)

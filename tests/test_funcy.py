@@ -28,3 +28,12 @@ def test_juxt():
 def test_map():
     assert list(funcy.map(add(3))(range(5))) == list(map(add(3), range(5)))
     assert list(funcy.map(add(3), add(1))(range(5))) == list(map(add(4), range(5)))
+
+def test_filter():
+    is_odd = lambda x: x % 2
+    assert list(funcy.filter(is_odd)(range(4))) == [1, 3]
+
+def test_remove():
+    is_even = lambda x: x % 2 == 0
+    assert list(funcy.remove(is_even)(range(4))) == [1, 3]
+
