@@ -3,7 +3,7 @@
 import functools
 from typing import Callable, List, Union, Iterable, Any
 from funcypy.funcy import partial
-from funcypy import cols, seqs
+from funcypy import cols, seqs, monitor
 
 stdlib_filter = filter
 
@@ -80,5 +80,5 @@ def pluck(fields: Union[str, List[str]], item: Union[dict, List[dict]]) -> Union
 def reduce(keys: Union[str, List[str]], oper: Callable, items: List[dict], init: dict=None):
     'A reducer of maps. This, along with pluck, should land in a `records` module'
     if not isinstance(keys, list): keys = [keys]
-    reducer = lambda mem, i: oper(mem, **keyfilter(keys, {**mem, **i}))
+    reducer = lambda mem, i: monitor.track(oper)(mem, **keyfilter(keys, {**mem, **i}))
     return functools.reduce(reducer, items, init)

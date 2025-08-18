@@ -88,4 +88,5 @@ def test_reduce():
     avg = lambda mem, y0, y1, y0sum, y1sum, count: dict(y0sum=(y0+y0sum*count)/(count+1), y1sum=(y1+y1sum*count)/(count+1), count=count+1)
     init = dict(y0sum=0, y1sum=0, count=0)
     assert maps.reduce(['y0', 'y1', 'y0sum', 'y1sum', 'count'], avg, points, init) == dict(y0sum=sum([i**2 for i in range(3)])/3, y1sum=sum([i**3 for i in range(3)])/3, count=3)
+    assert maps.reduce(['y0', 'y1', 'y0sum', 'y1sum', 'count'], avg, init=init)(points) == dict(y0sum=sum([i**2 for i in range(3)])/3, y1sum=sum([i**3 for i in range(3)])/3, count=3)
 
