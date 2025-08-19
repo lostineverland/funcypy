@@ -86,7 +86,11 @@ def test_pluck():
 def test_reduce():
     points = [{'x': i, 'y0': i**2 , 'y1': i**3} for i in range(3)]
     avg = lambda mem, y0, y1, y0sum, y1sum, count: dict(y0sum=(y0+y0sum*count)/(count+1), y1sum=(y1+y1sum*count)/(count+1), count=count+1)
-    init = dict(y0sum=0, y1sum=0, count=0)
-    assert maps.reduce(['y0', 'y1', 'y0sum', 'y1sum', 'count'], avg, points, init) == dict(y0sum=sum([i**2 for i in range(3)])/3, y1sum=sum([i**3 for i in range(3)])/3, count=3)
+    avg2 = lambda mem, **i: avg(mem, **i)
+    avg3 = lambda mem, history, **i: {'history': history + [i.get('y0')], **avg(mem, **i)}
+    init = dict(y0sum=0, y1sum=0, count=0, history=[])
     assert maps.reduce(['y0', 'y1', 'y0sum', 'y1sum', 'count'], avg, init=init)(points) == dict(y0sum=sum([i**2 for i in range(3)])/3, y1sum=sum([i**3 for i in range(3)])/3, count=3)
+    assert maps.reduce(['y0', 'y1', 'y0sum', 'y1sum', 'count'], avg, points, init) == dict(y0sum=sum([i**2 for i in range(3)])/3, y1sum=sum([i**3 for i in range(3)])/3, count=3)
+    assert maps.reduce(['y0', 'y1', 'y0sum', 'y1sum', 'count'], avg2, points, init) == dict(y0sum=sum([i**2 for i in range(3)])/3, y1sum=sum([i**3 for i in range(3)])/3, count=3)
+    assert maps.reduce(['y0', 'y1', 'y0sum', 'y1sum', 'count', 'history'], avg3, points, init) == dict(y0sum=sum([i**2 for i in range(3)])/3, y1sum=sum([i**3 for i in range(3)])/3, count=3, history=[i**2 for i in range(3)])
 
