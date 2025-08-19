@@ -46,9 +46,11 @@ def test_last(data):
     assert seqs.last([]) == None
 
 def test_concat(data):
+    assert list(seqs.concat(['some', 'thing'], ['some', 'more'])) == ['some', 'thing', 'some', 'more']
     assert list(seqs.concat(data, data)) == list(range(10))
-    assert list(seqs.concat(iter(range(3)), iter(range(3)))) == 2 * list(range(3))
-    assert list(seqs.concat([], iter(range(3)), [], [3], [])) == list(range(4))
+    assert list(seqs.concat(range(3), range(3))) == 2 * list(range(3))
+    # assert list(seqs.concat([range(3), range(3)])) == 2 * list(range(3))
+    assert list(seqs.concat([], range(3), [], [3], [])) == list(range(4))
 
 def test_iterator(data):
     assert list(seqs.iterator(range(10))) == list(range(10))

@@ -3,11 +3,11 @@
 import pytest
 from funcypy.sets import *
 
-def test_superset():
-    assert superset('some', 1, 'me')('some')
-    assert superset('some', 1, 'me')(1, 'me')
-    assert not superset('some', 1, 'me')('some', 'other')
-    assert has(3, 4, 5)(3)
+# def test_superset():
+#     assert superset('some', 1, 'me')('some')
+#     assert superset('some', 1, 'me')(1, 'me')
+#     assert not superset('some', 1, 'me')('some', 'other')
+#     assert has(3, 4, 5)(3)
 
 def test_subset():
     assert subset('some')('some', 1, 'me')

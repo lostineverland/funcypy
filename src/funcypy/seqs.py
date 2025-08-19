@@ -1,9 +1,11 @@
 'tools to handle lazy objects (sequences)'
 
 import functools, itertools
-from typing import Generator, Iterable, Iterator, List, Tuple, Any, Union
+from typing import Generator, Iterable, Iterator, List, Tuple, Any, Union, Callable
 from collections.abc import Iterable as IterableType
 missing = object()
+skip = object()
+cont = object()
 
 def is_lazy(obj: Any) -> bool:
     isLazy = lambda e: hasattr(obj, e)
@@ -65,6 +67,22 @@ def concat(*seq: Tuple[Iterable]) -> Generator:
         else:
             yield col
 
+# def concat(*seq: Tuple[Iterable]) -> Generator:
+#     'concatenate sequences'
+#     for col in seq:
+#         # print('col:', col)
+#         if isinstance(col, Iterable):
+#             for i in col:
+#                 # print('i:', i)
+#                 if isinstance(i, Iterable):
+#                     for j in concat(*i):
+#                         # print('j:', j)
+#                         yield j
+#                 else:
+#                     yield i
+#         else:
+#             yield col
+
 def iterator(seq: Iterable) -> Generator:
     '''An iterator which allows a "rewind" in the form of value re-insertion
         eg:
@@ -84,4 +102,14 @@ def iterator(seq: Iterable) -> Generator:
             rewind = yield rewind  # which triggered the rewind
         else:
             i = next(seq, missing)
-
+# @partial
+# def map(func: Union[Callable, List[Callable]], seq: Iterable) -> Generator:
+#     'Your friendly neighborhood map, but composable and curried'
+#     f = funcy.rcomp(func)
+#     if isinstance(func, list): func = rcomp(*func)
+#     i = next(seq, missing)
+#     while i is not missing:
+#         val = f(i)
+#         if val != skip:
+#             yield val
+#         i = next(seq, missing)

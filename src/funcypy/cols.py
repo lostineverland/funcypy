@@ -42,7 +42,7 @@ def keyfilter(oper: Union[Callable, str, List[str]], mseq: HashCol) -> Generator
     if isinstance(oper, str):
         op = lambda x: x == oper
     elif isinstance(oper, list):
-        op = has(*oper)
+        op = lambda i: i in oper
     else:
         op = oper
     for k, v in mseq:
@@ -61,7 +61,7 @@ def removekey(oper: Union[Callable, str, List[str]], mseq: HashCol) -> Generator
     if isinstance(oper, str):
         op = lambda x: x == oper
     elif isinstance(oper, list):
-        op = has(*oper)
+        op = lambda i: i in oper
     else:
         op = oper
     return keyfilter(complement(op), mseq)
