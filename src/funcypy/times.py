@@ -61,13 +61,14 @@ def dt_from_iso(iso_dt):
         dt = datetime.datetime.strptime(iso_dt[:-1], format)
     else:
         format = format_granularity(iso_dt)
-        dt = datetime.datetime.utcfromtimestamp(
-            datetime.datetime.strptime(iso_dt, format).timestamp())
+        dt = datetime.datetime.fromtimestamp(
+            datetime.datetime.strptime(iso_dt, format).timestamp(),
+            datetime.UTC)
     return dt.replace(tzinfo=datetime.timezone.utc)
 
 def epoch_to_iso(epoch, utc=True, iso_fmt='seconds'):
     if utc:
-        return datetime.datetime.utcfromtimestamp(epoch).strftime(iso_formats.get(iso_fmt, 'seconds')) + 'Z'
+        return datetime.datetime.fromtimestamp(epoch, datetime.UTC).strftime(iso_formats.get(iso_fmt, 'seconds')) + 'Z'
     else:
         return datetime.datetime.fromtimestamp(epoch).strftime(iso_formats.get(iso_fmt, 'seconds'))
 
@@ -81,5 +82,5 @@ def to_zulu(iso_dt):
 def to_local(iso_dt):
     return epoch_to_iso(dt_from_iso(iso_dt).timestamp(), utc=False)
 
-def local_diff():
-    return (datetime.datetime.utcfromtimestamp(0) - datetime.datetime.fromtimestamp(0)).total_seconds()
+# def local_diff():
+#     return (datetime.datetime.utcfromtimestamp(0) - datetime.datetime.fromtimestamp(0)).total_seconds()
