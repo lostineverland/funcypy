@@ -1,7 +1,8 @@
 'A module for set operations'
 
 from typing import Callable, Tuple
-from funcypy.seqs import is_iterable, concat
+from funcypy.seqs import concat
+from funcypy.types import is_iterable
 
 def superset(*items: Tuple) -> Callable:
     """Given a collection it returns the `superset` function of a set

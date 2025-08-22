@@ -8,7 +8,7 @@ import time, datetime
 from datetime import datetime
 from typing import Callable, Any, Dict, Union
 from . times import epoch_to_iso
-from . seqs import is_lazy
+from . types import is_lazy
 
 missing = object()
 

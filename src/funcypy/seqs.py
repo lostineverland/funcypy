@@ -2,17 +2,10 @@
 
 import functools, itertools
 from typing import Generator, Iterable, Iterator, List, Tuple, Any, Union, Callable
-from collections.abc import Iterable as IterableType
+from funcypy.funcy import partial, rcomp
 missing = object()
 skip = object()
 cont = object()
-
-def is_lazy(obj: Any) -> bool:
-    isLazy = lambda e: hasattr(obj, e)
-    return all(hasattr(obj, i) for i in ['__next__', '__iter__'])
-
-def is_iterable(obj: Any) -> bool:
-    return isinstance(obj, IterableType)
 
 def take(n: int, seq: Iterable=missing) -> List:
     if seq is missing: return functools.partial(take, n)
@@ -113,3 +106,23 @@ def iterator(seq: Iterable) -> Generator:
 #         if val != skip:
 #             yield val
 #         i = next(seq, missing)
+
+def select(pred: Union[Callable, List[Callable]], item: Any) -> Union[Any, None]:
+    'A simple selector based on a predicate'
+    if not isinstance(pred, list): pred = [pred]
+    pred = rcomp(*pred)
+    if pred(item): return item
+
+@partial
+def into(func: Union[Callable, List[Callable]], seq: Iterable=missing) -> Generator:
+    'Like map with filter, such that `func` is only applied if the result is not None'
+    if not isinstance(func, list): func = [func]
+    func = rcomp(*func)
+    i = next(seq, missing)
+    while i is not missing:
+        val = f(i)
+        if val:
+            yield val
+        else:
+            yield i
+        i = next(seq, missing)
