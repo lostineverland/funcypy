@@ -2,7 +2,8 @@
 
 import functools, itertools
 from typing import Generator, Iterable, Iterator, List, Tuple, Any, Union, Callable
-from funcypy.funcy import partial, rcomp
+from funcypy.funcy import partial, rcomp, some
+from funcypy.types import is_lazy, is_iterable
 missing = object()
 skip = object()
 cont = object()
@@ -107,22 +108,29 @@ def iterator(seq: Iterable) -> Generator:
 #             yield val
 #         i = next(seq, missing)
 
+@partial
 def select(pred: Union[Callable, List[Callable]], item: Any) -> Union[Any, None]:
-    'A simple selector based on a predicate'
+    'A simple selector based on a truthy predicate'
     if not isinstance(pred, list): pred = [pred]
-    pred = rcomp(*pred)
+    pred = some(*pred)
     if pred(item): return item
 
-@partial
-def into(func: Union[Callable, List[Callable]], seq: Iterable=missing) -> Generator:
-    'Like map with filter, such that `func` is only applied if the result is not None'
-    if not isinstance(func, list): func = [func]
+@partial(count=2)
+def cond(pred: Union[Callable, List[Callable]], func: Union[Callable, List[Callable]], seq: Iterable=missing) -> Generator:
+    '''Like a conditional map with filter, such that `func` is only applied if the pred results is True (truthy values don't work here).
+        Otherwise it will return the unchanged value. Falsy values are not sufficient other than None.
+        For truthy values use `select` as the predicate
+    '''
+    if not is_iterable(pred): pred = [pred]
+    if not is_iterable(func): func = [func]
+    if not is_lazy(seq): seq = iter(seq)
+    pred = some(*pred)
     func = rcomp(*func)
     i = next(seq, missing)
     while i is not missing:
-        val = f(i)
-        if val:
-            yield val
+        sel = pred(i)
+        if sel is True:
+            yield func(i)
         else:
             yield i
         i = next(seq, missing)

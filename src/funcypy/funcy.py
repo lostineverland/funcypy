@@ -4,7 +4,6 @@ import functools
 import json
 import builtins
 from typing import Any, Callable, Tuple, Dict, Union
-from funcypy.types import is_lazy
 from funcypy.monitor import track
 missing = object()
 
@@ -45,7 +44,6 @@ def some(*funcs: Callable, monitor: Union[bool, Dict]=True) -> Callable:
         the monitor option allows for tracking of the functions for debugging
         or with a frequency keyword (int or function) for random sampling
     '''
-    if not is_lazy(funcs): funcs = iter(funcs)
     if monitor:
         if isinstance(monitor, dict):
             opts = {'frequency': 1, **monitor}
@@ -54,18 +52,17 @@ def some(*funcs: Callable, monitor: Union[bool, Dict]=True) -> Callable:
         wrapper = lambda f: track(f, **opts)
     else:
         wrapper = lambda x: x
+    @track(frequency=1)
     def ff(*args, **kwargs):
         val = missing
-        f = next(funcs, missing)
-        while f is not missing:
+        for f in funcs:
             if val is None:
                 return None
             elif val is missing:
                 val = wrapper(f)(*args, **kwargs)
             else:
                 val = wrapper(f)(val)
-            f = next(funcs, missing)
-        return val
+        return val            
     return ff
 
 def partial(func: Callable=missing, count: int=1) -> Callable:

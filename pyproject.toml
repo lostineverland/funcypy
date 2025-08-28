@@ -1,6 +1,6 @@
 [project]
 name = "funcypy"
-version = "0.16.0"
+version = "0.16.1"
 description = "Minimalist functional leaning library"
 readme = "README.md"
 requires-python = ">=3.8"

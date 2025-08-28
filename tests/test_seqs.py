@@ -7,6 +7,8 @@ from funcypy import seqs
 def data():
     return iter(range(10))
 
+is_odd = lambda x: x % 2
+
 def test_take(data):
     assert list(seqs.take(2)(data)) == [0, 1]
 
@@ -43,7 +45,17 @@ def test_iterator(data):
     assert next(ii) == 1
     assert list(ii) == list(range(2, 10))
 
-# def test_select():
-#     is_odd = lambda x: x % 2
-#     assert seqs.select(is_odd, 1) == None
-#     assert seqs.select(is_odd, 2) == 2
+def test_select():
+    assert seqs.select(is_odd, 1) == 1
+    assert seqs.select(is_odd, 2) == None
+
+def test_cond():
+    is_even = lambda x: x % 2 == 0
+    assert list(seqs.cond(
+                is_even,
+                lambda x: x**2,
+            range(5))) == [i**2 if is_even(i) else i for i in range(5)] 
+    assert list(seqs.cond(
+                is_odd,
+                lambda x: x**2,
+            range(5))) == [i for i in range(5)] 
