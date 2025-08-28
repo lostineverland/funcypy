@@ -1,7 +1,7 @@
 'Test funcy operators module'
 
 import pytest
-from funcypy import funcy, sets
+from funcypy import funcy, sets, maps
 
 @funcy.partial(count=1)
 def add(x, y):
@@ -18,6 +18,19 @@ def test_rcomp_complement():
     assert funcy.rcomp(add(3), pow(2))(2) == 25
     assert funcy.rcomp(funcy.rcomp(add(3), add(3)), pow(2))(2) == 64
     assert funcy.complement(funcy.rcomp(add(3), pow(2)))(2) == False
+
+def test_some():
+    data = {"some": {"nested": {"value1": 1, "value2": [{"more":{"nesting": 3}}, {"value4": 4}]}, "other": 3}}
+    assert funcy.some(
+        maps.pluck('some'),
+        maps.pluck('nested'),
+        maps.pluck('value1'),
+        )(data) == 1
+    assert funcy.some(
+        lambda x: x.get('someday'),
+        lambda x: x.get('nested'),
+        lambda x: x.get('value1'),
+        )(data) == None
 
 def test_pipe():
     assert funcy.pipe(2, add(3), pow(2)) == 25

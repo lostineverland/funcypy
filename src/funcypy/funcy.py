@@ -4,6 +4,7 @@ import functools
 import json
 import builtins
 from typing import Any, Callable, Tuple, Dict, Union
+from funcypy.types import is_lazy
 from funcypy.monitor import track
 missing = object()
 
@@ -37,6 +38,35 @@ def rcomp(*funcs: Callable, monitor: Union[bool, Dict]=True) -> Callable:
             return lambda y: functools.reduce(lambda x, f: track(f, **opts)(x), funcs, y)
         return lambda y: functools.reduce(lambda x, f: track(f, frequency=0)(x), funcs, y)
     return lambda y: functools.reduce(lambda x, f: f(x), funcs, y)
+
+def some(*funcs: Callable, monitor: Union[bool, Dict]=True) -> Callable:
+    '''reverse function composition which stops evaluation if any of the functions
+        return None
+        the monitor option allows for tracking of the functions for debugging
+        or with a frequency keyword (int or function) for random sampling
+    '''
+    if not is_lazy(funcs): funcs = iter(funcs)
+    if monitor:
+        if isinstance(monitor, dict):
+            opts = {'frequency': 1, **monitor}
+        else:
+            opts = {'frequency': 0}
+        wrapper = lambda f: track(f, **opts)
+    else:
+        wrapper = lambda x: x
+    def ff(*args, **kwargs):
+        val = missing
+        f = next(funcs, missing)
+        while f is not missing:
+            if val is None:
+                return None
+            elif val is missing:
+                val = wrapper(f)(*args, **kwargs)
+            else:
+                val = wrapper(f)(val)
+            f = next(funcs, missing)
+        return val
+    return ff
 
 def partial(func: Callable=missing, count: int=1) -> Callable:
     '''The functtools.partial function as a decorator with a count trigger,
