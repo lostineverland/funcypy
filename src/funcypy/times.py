@@ -1,4 +1,5 @@
 import datetime
+from typing import Tuple
 from functools import partial
 
 ISO_8601_YEARS = '%Y'
@@ -21,13 +22,22 @@ iso_formats = {
     'microseconds': ISO_8601_MICROSECONDS,
 }
 
-def format_granularity(iso_dt: str) -> str:
+
+def format_granularity(iso_dt: str) -> Tuple[str, str]:
     "Determine the granularity of the iso_dt string based on it's length"
-    len_to_format = {
-        len(datetime.datetime.now().strftime(v)): v 
-        for k, v in iso_formats.items()
-    }
-    return len_to_format.get(len(iso_dt), 'unknown_iso_dt')
+    iso_formats_to_len = {k: len(datetime.datetime.now().strftime(v)) for k, v in iso_formats.items()}
+    len_to_iso_format = {v: iso_formats.get(k) for k, v in iso_formats_to_len.items()}
+    iso_dt_len = len(iso_dt)
+    fmt = len_to_iso_format.get(iso_dt_len, 'unknown_iso_dt')
+    if fmt == 'unknown_iso_dt':
+        if iso_dt_len > (micro_len := iso_formats_to_len.get('microseconds')):
+            fmt = iso_formats.get('microseconds')
+            iso_dt = iso_dt[:micro_len]
+        elif iso_dt_len > iso_formats_to_len.get('seconds'):
+            pad = iso_formats_to_len.get('microseconds') - iso_dt_len
+            fmt = iso_formats.get('microseconds')
+            iso_dt = iso_dt + '0' * pad
+    return iso_dt, fmt
 
 def iso_ts(format, local=False):
     '''Where format is one of:
@@ -57,12 +67,12 @@ utc_year = partial(iso_ts, 'years')
 def dt_from_iso(iso_dt):
     'always return UTC datetime'
     if iso_dt[-1] == 'Z':
-        format = format_granularity(iso_dt[:-1])
-        dt = datetime.datetime.strptime(iso_dt[:-1], format)
+        iso_dt, fmt = format_granularity(iso_dt[:-1])
+        dt = datetime.datetime.strptime(iso_dt, fmt)
     else:
-        format = format_granularity(iso_dt)
+        iso_dt, fmt = format_granularity(iso_dt)
         dt = datetime.datetime.fromtimestamp(
-            datetime.datetime.strptime(iso_dt, format).timestamp(),
+            datetime.datetime.strptime(iso_dt, fmt).timestamp(),
             datetime.UTC)
     return dt.replace(tzinfo=datetime.timezone.utc)
 
