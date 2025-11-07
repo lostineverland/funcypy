@@ -1,6 +1,6 @@
 'Operating on sequences'
 
-import functools
+import functools, itertools
 from typing import List, Iterable, Callable, Dict, Union
 from funcypy.funcy import partial, map, rcomp
 from funcypy import seqs
@@ -16,3 +16,12 @@ def map(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
     return functools.update_wrapper(
         functools.partial(vmap, rcomp(*func, monitor=monitor)),
         map)
+
+@partial
+def groupby(oper: Union[Callable, str], mseq: List[Dict]) -> Dict:
+    if isinstance(oper, str):
+        op = lambda x: x == oper
+    else:
+        op = oper
+    return {k: list(v) for k, v in itertools.groupby(sorted(mseq, key=op), key=op)}
+

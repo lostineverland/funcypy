@@ -15,3 +15,7 @@ def test_map():
     add_1 = lambda x: x + 1
     val = vecs.map(maps.valmap(add_1))([{'x': i} for i in range(3)])
     assert val == [{'x': i} for i in range(1, 4)]
+
+def test_sorted():
+    odd = lambda x: x % 2
+    assert vecs.groupby(odd, range(10)) == {0: [0, 2, 4, 6, 8], 1: [1, 3, 5, 7, 9]}
