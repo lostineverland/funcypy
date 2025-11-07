@@ -20,7 +20,7 @@ def map(*func: Callable, monitor: Union[bool, Dict]=True) -> Callable:
 @partial
 def groupby(oper: Union[Callable, str], mseq: List[Dict]) -> Dict:
     if isinstance(oper, str):
-        op = lambda x: x == oper
+        op = lambda e: e.get(oper)
     else:
         op = oper
     return {k: list(v) for k, v in itertools.groupby(sorted(mseq, key=op), key=op)}

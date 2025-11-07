@@ -19,3 +19,8 @@ def test_map():
 def test_sorted():
     odd = lambda x: x % 2
     assert vecs.groupby(odd, range(10)) == {0: [0, 2, 4, 6, 8], 1: [1, 3, 5, 7, 9]}
+    data = [dict(some=1, on=2), dict(some=2, on=2), dict(some=1, on=3), dict(some=2, on=3)]
+    assert vecs.groupby('some', data) == {
+        1: [dict(some=1, on=2), dict(some=1, on=3)],
+        2: [dict(some=2, on=2), dict(some=2, on=3)],
+    }
